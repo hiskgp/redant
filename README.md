@@ -1,184 +1,277 @@
-# wacrm — CRM Template for WhatsApp
+# RedANT — WhatsApp CRM & Business Automation
 
-> Self-hostable CRM template for WhatsApp® — shared inbox, contacts,
-> sales pipelines, broadcasts, and no-code automations. Fork it, brand
-> it, host it.
+> **RedANT** is a WhatsApp CRM and business automation platform designed to help businesses manage customer conversations, automate replies, organize leads, and streamline sales — all from one place.
 
-<p align="center">
-  <a href="https://www.hostinger.com/web-apps-hosting?REFERRALCODE=WACRMHOST">
-    <img src="./.github/assets/hostinger-deploy.png" alt="Ship your Node.js app in one click — Deploy to Hostinger" width="900">
-  </a>
-</p>
+**Website:** https://redant.in
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-violet.svg)](./LICENSE)
-[![CI](https://github.com/ArnasDon/wacrm/actions/workflows/ci.yml/badge.svg)](https://github.com/ArnasDon/wacrm/actions/workflows/ci.yml)
-[![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)](https://nextjs.org)
-[![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20Auth-3ecf8e?logo=supabase)](https://supabase.com)
-[![Stars](https://img.shields.io/github/stars/ArnasDon/wacrm?style=social)](https://github.com/ArnasDon/wacrm/stargazers)
+---
 
-The marketing site and self-host docs live in a separate repo:
-[ArnasDon/wacrm-site](https://github.com/ArnasDon/wacrm-site)
-([wacrm.tech](https://wacrm.tech)). This repo is the product —
-clone or fork it to run your own CRM.
+## About RedANT
 
-## What you get out of the box
+RedANT helps businesses simplify customer communication through WhatsApp automation, CRM tools, and AI-powered assistance.
 
-- **Shared inbox** on the official WhatsApp Business API — multiple
-  agents working one number, per-conversation assignment, status, and
-  notes.
-- **Contacts + tags + custom fields**, CSV import, deduplication.
-- **Sales pipelines** (Kanban) with deals linked to conversations.
-- **Broadcasts** with Meta-approved templates, delivery + read
-  tracking, per-recipient variable substitution.
-- **No-code automations** — triggers on inbound messages, new
-  contacts, keywords, or schedule; conditional branches, waits,
-  tags, webhooks. Visual builder.
-- **AI reply assistant** — bring your own OpenAI or Anthropic key
-  (stored encrypted; no per-seat AI fee, your data stays yours).
-  One-click AI-drafted replies in the inbox, plus an optional
-  auto-reply bot with a per-conversation cap and clean human handoff.
-  Add a **knowledge base** (FAQs, policies, product docs) and it
-  answers from your own content — hybrid retrieval (Postgres full-text,
-  or semantic pgvector when an embeddings key is set).
-- **Real-time dashboard** — response times, daily volume, pipeline
-  value, cross-module activity feed.
-- **Team accounts** — invite teammates by link, role-based access
-  (owner / admin / agent / viewer), ownership transfer. Every install
-  is account-scoped, so one shared inbox can be staffed by a whole
-  team. Solo use stays single-user with zero setup.
-- **Account management** — email, password, avatar, global sign-out.
-- **Public REST API** (`/api/v1`) with scoped, revocable API keys —
-  build your own automations on top of your CRM. See
-  [docs/public-api.md](./docs/public-api.md).
-- **MCP server** — drive your CRM from Claude, Cursor, and other AI
-  assistants over the [Model Context Protocol](https://modelcontextprotocol.io).
-  Read-only by default, opt-in writes. See [docs/mcp.md](./docs/mcp.md)
-  (server in [`mcp-server/`](./mcp-server)).
+Whether you run a boutique, cake shop, D2C brand, or e-commerce business, RedANT helps you manage customer enquiries, follow up with leads, and automate repetitive conversations.
 
-## Why fork this?
+**Our mission:** Help businesses save time, improve customer engagement, and grow through smarter communication.
 
-This is a **template**, not a product. Forking means you get:
+## Features
 
-- **Full ownership** — your code, your Supabase project, your domain,
-  your data. No SaaS lock-in, no seat pricing, no trust dance.
-- **Full customisation** — add the fields your team needs, remove the
-  modules you don't, redesign anything. The stack is boring on
-  purpose (Next.js + Supabase + Tailwind) so the learning curve is
-  short.
-- **Zero ops to start** — [Hostinger](https://www.hostinger.com/web-apps-hosting?REFERRALCODE=WACRMHOST)
-  Managed Node.js deploys a fork in a few clicks. No Docker, no
-  Kubernetes, no infra team needed.
-  ([See below ↓](#-deploy-on-hostinger-recommended))
-- **Real security primitives** — token encryption (AES-256-GCM), RLS
-  on every table, HMAC-verified webhooks, CSP, rate limiting, CI
-  typecheck/build on every PR.
+### WhatsApp Business CRM
 
-Not a framework. Not an SDK. A concrete, working CRM you can stand up
-in an afternoon and make yours.
+* Shared inbox for managing customer conversations.
+* Assign conversations to team members.
+* Track conversation status and add internal notes.
+* Manage customer contacts, tags, and custom fields.
+* Import contacts using CSV files.
 
-## Quick start
+### Sales & Lead Management
+
+* Organize leads using Kanban-style sales pipelines.
+* Track deals and sales opportunities.
+* Link customer conversations with sales activities.
+* Manage leads from enquiry to conversion.
+
+### WhatsApp Broadcasts
+
+* Send messages using approved WhatsApp templates.
+* Personalize messages using recipient variables.
+* Track message delivery and read status.
+* Manage customer communication campaigns.
+
+*WhatsApp messaging is subject to Meta's policies, template approval, and applicable messaging charges.*
+
+### No-Code Automation
+
+* Automate responses to incoming messages.
+* Trigger workflows based on keywords and customer activity.
+* Use conditional branches, delays, tags, and webhooks.
+* Build workflows using a visual automation editor.
+
+### AI-Powered Reply Assistant
+
+* Generate AI-assisted customer replies.
+* Support OpenAI and Anthropic integrations.
+* Configure automated replies with human handoff.
+* Create a knowledge base using FAQs, policies, and product documentation.
+* Retrieve relevant information from your own business content.
+
+AI functionality depends on the configured provider and API credentials. Provider usage charges may apply.
+
+### Team Collaboration
+
+* Invite team members to collaborate.
+* Manage owner, admin, agent, and viewer roles.
+* Assign conversations and manage team access.
+* Support individual and team-based workflows.
+
+### Analytics & Dashboard
+
+* Monitor customer conversation activity.
+* Track response times and message volume.
+* View sales pipeline values.
+* Review activity across CRM modules.
+
+### Developer Integrations
+
+* Public REST API with scoped API keys.
+* MCP server integration for compatible AI assistants.
+* Webhook support for external integrations.
+* Extend the platform to fit your business workflows.
+
+---
+
+## Why Choose RedANT?
+
+RedANT brings customer communication, lead management, and automation together in one platform.
+
+* **Save time:** Automate repetitive customer enquiries.
+* **Manage leads:** Keep customer conversations and sales opportunities organized.
+* **Improve follow-ups:** Reduce the chance of missing customer enquiries.
+* **Work as a team:** Allow multiple agents to manage customer conversations.
+* **Support customers in Tamil and English:** Communicate with customers in their preferred language.
+* **Scale your business:** Build workflows that support your growing customer base.
+
+RedANT is designed to help businesses work smarter while keeping customer communication organized.
+
+---
+
+## RedANT Plans
+
+| Plan       |  Price |
+| ---------- | -----: |
+| Standard   |   ₹999 |
+| Stable     | ₹2,999 |
+| E-commerce | ₹3,999 |
+
+*Prices are indicative plan prices. Confirm billing frequency, included features, applicable taxes, Meta messaging charges, and any usage limits with RedANT before purchasing.*
+
+For plan details and enquiries, visit [redant.in](https://redant.in).
+
+---
+
+## Technology Stack
+
+* **Frontend:** Next.js, React, TypeScript, Tailwind CSS
+* **Backend:** Next.js and Node.js
+* **Database & Authentication:** Supabase (PostgreSQL, Auth, Storage, and Row-Level Security)
+* **Messaging:** Official WhatsApp Business Platform / Meta Cloud API
+* **AI integrations:** OpenAI and Anthropic, when configured
+* **Deployment:** Vercel or another compatible Node.js hosting environment, subject to application requirements
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+Before running the application locally, make sure you have:
+
+* Node.js and npm installed.
+* A Git client.
+* A Supabase project.
+* The required Meta WhatsApp Business Platform credentials.
+* The necessary environment variables.
+
+### Installation
 
 ```bash
-# Fork on GitHub first: https://github.com/ArnasDon/wacrm → Fork
-git clone https://github.com/<your-username>/wacrm.git
-cd wacrm
+# Clone your RedANT repository
+git clone <YOUR_REDANT_GITHUB_REPOSITORY_URL>
+
+# Navigate into the project
+cd <YOUR_PROJECT_DIRECTORY>
+
+# Install dependencies
 npm install
-cp .env.local.example .env.local   # fill in Supabase + Meta creds
+
+# Create your local environment file
+cp .env.local.example .env.local
+
+# Configure your environment variables
+# Start the development server
 npm run dev
 ```
 
-Open <http://localhost:3000>. You'll be redirected to `/login` (or
-`/dashboard` if already signed in).
+Open http://localhost:3000 in your browser.
 
-The UI ships in English, Korean, Brazilian Portuguese and Spanish — set
-`NEXT_PUBLIC_APP_LOCALE` to `en`, `ko`, `pt` or `es` in `.env.local`
-(catalogues live in `messages/`).
+**Note:** Replace the repository URL and project directory with your actual RedANT GitHub details. Complete the required Supabase and Meta configuration before using the application.
 
-Prefer containers? See [docs/docker.md](./docs/docker.md) for the
-Dockerfile + Docker Compose setup.
+---
 
-## 🚀 Deploy on Hostinger (recommended)
+## Environment Configuration
 
-<p align="center">
-  <a href="https://www.hostinger.com/web-apps-hosting?REFERRALCODE=WACRMHOST">
-    <img src="./.github/assets/hostinger-deploy.png" alt="Ship your Node.js app in one click — Deploy to Hostinger" width="1000">
-  </a>
-</p>
-<p align="center">
-  <a href="https://wacrm.tech/docs/deployment-hostinger">
-    <img src="https://img.shields.io/badge/Step--by--step_guide-wacrm.tech%2Fdocs-111?style=for-the-badge" alt="Step-by-step guide" height="44">
-  </a>
-</p>
+Configure the environment variables required by the application in your `.env.local` file.
 
-**wacrm is built to run on [Hostinger](https://www.hostinger.com/web-apps-hosting?REFERRALCODE=WACRMHOST).**
-It's the path we test, document, and recommend — and the fastest way
-to get a production-grade CRM live without owning a VPS or a
-Kubernetes cluster.
+Typical configuration areas include:
 
-### Why Hostinger?
+* Supabase project URL and keys.
+* WhatsApp Business Platform credentials.
+* Meta application configuration.
+* Encryption keys.
+* AI provider API keys, if AI features are enabled.
 
-| | |
-|---|---|
-| **One-click Git deploy** | Connect your fork, push to `main`, Hostinger builds and ships it. No SSH, no Docker, no CI to wire up — this repo's own `main` deploys this way. |
-| **Managed Node.js** | Next.js 16 (App Router, server actions, ISR) runs out of the box on [Premium, Business, and Cloud](https://www.hostinger.com/web-apps-hosting?REFERRALCODE=WACRMHOST) shared plans. You don't manage Node versions, processes, or reverse proxies. |
-| **Free SSL + free domain** | Automatic Let's Encrypt on your custom domain (or a free one included with annual plans). HTTPS is on by default — required for the WhatsApp Business webhook. |
-| **Global CDN + LiteSpeed** | Static assets cached at the edge, dynamic routes served from LiteSpeed. Snappy dashboards out of the box, no Cloudflare setup required. |
-| **Env vars + logs in hPanel** | Set `SUPABASE_*`, `WHATSAPP_*`, and `ENCRYPTION_KEY` from the panel — no `.env` on the server. Live application logs in the same UI. |
-| **DDoS protection + daily backups** | Built-in, no add-ons. The webhook endpoint is a public target — having protection at the edge matters. |
-| **Cheaper than a VPS** | Plans start at a few dollars a month — order-of-magnitude less than a comparable managed Node.js host, and you don't pay extra for the database (that's Supabase). |
-| **24/7 human support** | Live chat support in 20+ languages — useful when your CRM is the thing your team relies on to talk to customers. |
+Refer to the environment example file and the project's deployment documentation for the exact variable names and required values.
 
-### The 60-second version
+**Security:** Never commit `.env.local`, API keys, access tokens, or other secrets to GitHub. Use your hosting provider's secure environment variable settings for production.
 
-1. **Fork** this repo on GitHub.
-2. In **hPanel → Websites → Create**, pick **Node.js** and connect
-   your fork.
-3. Paste your Supabase + Meta env vars into hPanel.
-4. Push to `main`. Hostinger builds and serves it. Done.
+---
 
-Full walkthrough with screenshots:
-**[wacrm.tech/docs/deployment-hostinger](https://wacrm.tech/docs/deployment-hostinger)**.
+## WhatsApp Business API Setup
 
-> _Note: wacrm is MIT-licensed and runs anywhere Node.js does
-> (Vercel, Railway, your own VPS). Hostinger is recommended, not
-> required._
+RedANT integrates with the official WhatsApp Business Platform.
+
+To connect a business WhatsApp account, you may need:
+
+1. A Meta Business Portfolio.
+2. A WhatsApp Business Account (WABA).
+3. A registered or eligible business phone number.
+4. The required Meta app configuration and permissions.
+5. WhatsApp webhook configuration.
+6. Valid access tokens and other required credentials.
+
+The connection process depends on your Meta setup and the WhatsApp integration configured in your deployment.
+
+WhatsApp messaging must comply with Meta's policies, including applicable template, consent, and messaging requirements.
+
+---
+
+## Deployment
+
+RedANT is built using Next.js and can be deployed to a compatible hosting environment.
+
+For your deployment, configure:
+
+* Your production domain.
+* Required environment variables.
+* Supabase production settings.
+* WhatsApp webhook URL and verification.
+* HTTPS and appropriate security settings.
+* Database migrations and production access controls.
+
+**Website:** https://redant.in
+
+---
+
+## Security & Privacy
+
+RedANT uses application security mechanisms that may include:
+
+* Role-based access control.
+* Supabase Row-Level Security.
+* Secure handling of application credentials.
+* Webhook verification.
+* API key access controls.
+* Rate limiting and application security headers.
+
+Security depends on the deployed version, configuration, and operational practices.
+
+Keep your credentials private and ensure that production access is properly restricted.
+
+For customer-facing deployments, provide an appropriate privacy policy and comply with applicable data protection requirements.
+
+---
 
 ## Documentation
 
-Full self-host documentation — Supabase migrations, WhatsApp Business
-API config, and production deploy — lives at
-**[wacrm.tech/docs](https://wacrm.tech/docs)**
-(source: [ArnasDon/wacrm-site](https://github.com/ArnasDon/wacrm-site)).
+For product information, business enquiries, and RedANT updates:
 
-Key pages:
-- [Getting started](https://wacrm.tech/docs/getting-started)
-- [Supabase setup](https://wacrm.tech/docs/supabase-setup)
-- [WhatsApp setup](https://wacrm.tech/docs/whatsapp-setup)
-- [Environment variables](https://wacrm.tech/docs/environment-variables)
-- [Deploy on Hostinger](https://wacrm.tech/docs/deployment-hostinger)
-- [Architecture](https://wacrm.tech/docs/architecture)
-- [Troubleshooting](https://wacrm.tech/docs/troubleshooting)
-- [WhatsApp connection troubleshooting](./docs/whatsapp-connection-troubleshooting.md)
-  — what each "Save Configuration" error means, and the Meta code /
-  trace id to quote to Meta support
-- [Several WABAs on one deployment](./docs/multi-waba.md) — one Meta
-  App or several; how `META_APP_SECRET` takes a comma-separated list
+* **Website:** [redant.in](https://redant.in)
+* **GitHub:** Add your official RedANT repository URL here.
+* **Documentation:** Add your official RedANT documentation URL here.
 
-## Stack
-
-- **App** — Next.js 16 (App Router), React 19, TypeScript, Tailwind v4.
-- **Data** — Supabase (Postgres + Auth + Storage + RLS).
-- **WhatsApp** — Meta Cloud API (official WhatsApp Business API).
+---
 
 ## Contributing
 
-This is a template, not a collaborative product — the expected flow is
-fork → customise → deploy, **not** upstream contribution. Bug reports
-and security issues are welcome; feature PRs often belong in your fork
-rather than here. Details in
-[`CONTRIBUTING.md`](./CONTRIBUTING.md) and
-[`.github/SECURITY.md`](./.github/SECURITY.md).
+RedANT is developed and maintained as part of the RedANT platform.
 
-## License
+Contributions, bug reports, and suggestions can be submitted through the project's GitHub repository, subject to the repository's contribution guidelines.
 
-[MIT](./LICENSE). Fork it, brand it, host it.
+Before submitting changes, please ensure that:
+
+* The code follows the project's existing conventions.
+* No secrets or credentials are included.
+* Relevant checks and tests are completed.
+* Changes are documented where necessary.
+
+---
+
+## License & Attribution
+
+This repository is distributed under the MIT License, subject to the terms of the included `LICENSE` file.
+
+If this project is derived from or incorporates code from another repository, retain the original copyright notices, license terms, and required attributions.
+
+Original project: [ArnasDon/wacrm](https://github.com/ArnasDon/wacrm)
+
+---
+
+## Contact
+
+**RedANT — WhatsApp CRM & Business Automation**
+
+Website: https://redant.in
+
+Helping businesses manage conversations, automate customer communication, and grow with smarter WhatsApp workflows.
+
+**RedANT — Smarter Conversations. Better Business.**
