@@ -95,14 +95,6 @@ RedANT is designed to help businesses work smarter while keeping customer commun
 
 ---
 
-## RedANT Plans
-
-| Plan       |  Price |
-| ---------- | -----: |
-| Standard   |   ₹999 |
-| Stable     | ₹2,999 |
-| E-commerce | ₹3,999 |
-
 *Prices are indicative plan prices. Confirm billing frequency, included features, applicable taxes, Meta messaging charges, and any usage limits with RedANT before purchasing.*
 
 For plan details and enquiries, visit [redant.in](https://redant.in).
