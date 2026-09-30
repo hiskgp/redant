@@ -22,13 +22,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "wacrm",
-    template: "%s — wacrm",
+    default: "RedANT — WhatsApp CRM, AI & Automation",
+    template: "%s — RedANT",
   },
-  description: "Self-hostable CRM template for WhatsApp.",
+  description: "RedANT helps businesses manage WhatsApp conversations, automate replies, follow up with leads and grow sales from one powerful workspace.",
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
   icons: {
     icon: [{ url: "/icon" }],
