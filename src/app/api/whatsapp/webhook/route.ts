@@ -149,7 +149,11 @@ export async function GET(request: Request) {
       )
     }
 
-    // Fetch all whatsapp configs to check verify tokens
+    // A deployment-wide verify token is used for Embedded Signup connections.
+    // Existing per-account encrypted tokens remain supported for legacy/manual connections.
+    const deploymentVerifyToken = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN?.trim() || null
+
+    // Fetch all whatsapp configs to check per-account verify tokens
     const { data: configs, error: configError } = await supabaseAdmin()
       .from('whatsapp_config')
       .select('id, verify_token')
@@ -160,6 +164,15 @@ export async function GET(request: Request) {
         { error: 'Verification failed' },
         { status: 403 }
       )
+    }
+
+    // Embedded Signup connections may use the deployment token; older
+    // manual connections may have their own encrypted token.
+    if (deploymentVerifyToken && deploymentVerifyToken === verifyToken) {
+      return new Response(challenge, {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain' },
+      })
     }
 
     // Check if any config's verify_token matches. Also collect the
