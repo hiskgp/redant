@@ -31,6 +31,7 @@ import {
   AccordionContent,
 } from '@/components/ui/accordion';
 import type { WhatsAppConfig as WhatsAppConfigType } from '@/types';
+import { EmbeddedWhatsAppSignup } from './embedded-whatsapp-signup';
 
 const MASKED_TOKEN = '••••••••••••••••';
 
@@ -531,6 +532,14 @@ export function WhatsAppConfig() {
         title={t("title")}
         description={t("description")}
       />
+      <div className="mb-6">
+        <EmbeddedWhatsAppSignup
+          disabled={!canEditSettings}
+          onConnected={() => {
+            if (accountId) void fetchConfig(accountId);
+          }}
+        />
+      </div>
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
       {/* Main config form */}
       <div className="space-y-6">
