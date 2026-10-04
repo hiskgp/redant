@@ -80,7 +80,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     }
 
     const handleMessage = (event: MessageEvent) => {
-      if (!event.origin.endsWith('facebook.com')) return
+      if (event.origin !== 'https://www.facebook.com' && event.origin !== 'https://facebook.com') return
       let data: { type?: string; event?: string; data?: SignupData & { current_step?: string; error_message?: string } }
       try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch { return }
       if (data?.type !== 'WA_EMBEDDED_SIGNUP') return
@@ -88,7 +88,8 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       if (data.event === 'FINISH') {
         dataRef.current = data.data ?? null
         setError('')
-        void completeSignup()
+        if (codeRef.current) void completeSignup()
+        else setMessage('Meta finished setup. Waiting for the authorization response…')
       } else if (data.event === 'CANCEL') {
         submittedRef.current = false
         codeRef.current = null
@@ -151,7 +152,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
           return
         }
         codeRef.current = code
-        void completeSignup()
+        if (dataRef.current) void completeSignup()
       },
       {
         config_id: configId,
