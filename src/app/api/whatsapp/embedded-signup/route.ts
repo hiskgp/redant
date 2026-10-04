@@ -31,10 +31,10 @@ export async function POST(request: Request) {
     const body = await request.json()
     const code = typeof body.code === 'string' ? body.code.trim() : ''
     const wabaId = typeof body.waba_id === 'string' ? body.waba_id.trim() : ''
-    const phoneNumberId = typeof body.phone_number_id === 'string' ? body.phone_number_id.trim() : ''
+    let phoneNumberId = typeof body.phone_number_id === 'string' ? body.phone_number_id.trim() : ''
 
-    if (!code || !/^\d+$/.test(wabaId) || !/^\d+$/.test(phoneNumberId)) {
-      return NextResponse.json({ error: 'Meta did not return a valid signup code, WABA ID, or Phone Number ID.' }, { status: 400 })
+    if (!code || !/^\d+$/.test(wabaId)) {
+      return NextResponse.json({ error: 'Meta did not return a valid signup code or WABA ID.' }, { status: 400 })
     }
 
     const appId = process.env.META_APP_ID
@@ -59,6 +59,17 @@ export async function POST(request: Request) {
 
     const accessToken = String(tokenPayload.access_token)
 
+    const numbers = await listWabaPhoneNumbers({ wabaId, accessToken })
+    if (!phoneNumberId) {
+      if (numbers.length !== 1) {
+        return NextResponse.json({ error: 'Meta did not return a Phone Number ID and this WABA has multiple numbers. RedANT cannot safely choose a number.' }, { status: 400 })
+      }
+      phoneNumberId = numbers[0].id
+    }
+    if (!/^\d+$/.test(phoneNumberId)) {
+      return NextResponse.json({ error: 'Meta returned an invalid Phone Number ID.' }, { status: 400 })
+    }
+
     let phoneInfo
     try {
       phoneInfo = await verifyPhoneNumber({ phoneNumberId, accessToken })
@@ -66,7 +77,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Meta issued a token, but RedANT could not verify the selected WhatsApp phone number.' }, { status: 400 })
     }
 
-    const numbers = await listWabaPhoneNumbers({ wabaId, accessToken })
     if (!numbers.some((n) => n.id === phoneNumberId)) {
       return NextResponse.json({ error: 'The selected WhatsApp phone number does not belong to the WABA returned by Meta.' }, { status: 400 })
     }
