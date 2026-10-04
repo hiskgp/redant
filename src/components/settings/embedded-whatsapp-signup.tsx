@@ -85,7 +85,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch { return }
       if (data?.type !== 'WA_EMBEDDED_SIGNUP') return
 
-      if (data.event === 'FINISH') {
+      if (data.event === 'FINISH' || data.event === 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING') {
         dataRef.current = data.data ?? null
         setError('')
         if (codeRef.current) void completeSignup()
