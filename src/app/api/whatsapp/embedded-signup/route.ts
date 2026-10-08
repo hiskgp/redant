@@ -30,35 +30,39 @@ export async function POST(request: Request) {
 
     const body = await request.json()
     const code = typeof body.code === 'string' ? body.code.trim() : ''
+    const accessTokenFromClient = typeof body.access_token === 'string' ? body.access_token.trim() : ''
     const wabaId = typeof body.waba_id === 'string' ? body.waba_id.trim() : ''
     let phoneNumberId = typeof body.phone_number_id === 'string' ? body.phone_number_id.trim() : ''
 
-    if (!code || !/^\d+$/.test(wabaId)) {
-      return NextResponse.json({ error: 'Meta did not return a valid signup code or WABA ID.' }, { status: 400 })
+    if ((!code && !accessTokenFromClient) || !/^\d+$/.test(wabaId)) {
+      return NextResponse.json({ error: 'Meta did not return a valid signup credential or WABA ID.' }, { status: 400 })
     }
 
-    const appId = process.env.META_APP_ID
-    const appSecret = process.env.META_APP_SECRET?.split(',')[0]?.trim()
-    if (!appId || !appSecret) {
-      return NextResponse.json({ error: 'Meta Embedded Signup is not configured on the server. Set META_APP_ID and META_APP_SECRET.' }, { status: 500 })
+    let accessToken = accessTokenFromClient
+
+    if (!accessToken) {
+      const appId = process.env.META_APP_ID
+      const appSecret = process.env.META_APP_SECRET?.split(',')[0]?.trim()
+      if (!appId || !appSecret) {
+        return NextResponse.json({ error: 'Meta Embedded Signup is not configured on the server. Set META_APP_ID and META_APP_SECRET.' }, { status: 500 })
+      }
+
+      const tokenUrl = new URL(`${GRAPH}/oauth/access_token`)
+      tokenUrl.searchParams.set('client_id', appId)
+      tokenUrl.searchParams.set('client_secret', appSecret)
+      tokenUrl.searchParams.set('code', code)
+
+      const tokenResponse = await fetch(tokenUrl, { cache: 'no-store' })
+      const tokenPayload = await tokenResponse.json().catch(() => ({}))
+      if (!tokenResponse.ok || !tokenPayload.access_token) {
+        return NextResponse.json(
+          { error: tokenPayload?.error?.message || 'Meta rejected the Embedded Signup authorization code.' },
+          { status: 400 },
+        )
+      }
+
+      accessToken = String(tokenPayload.access_token)
     }
-
-    const tokenUrl = new URL(`${GRAPH}/oauth/access_token`)
-    tokenUrl.searchParams.set('client_id', appId)
-    tokenUrl.searchParams.set('client_secret', appSecret)
-    tokenUrl.searchParams.set('code', code)
-
-    const tokenResponse = await fetch(tokenUrl, { cache: 'no-store' })
-    const tokenPayload = await tokenResponse.json().catch(() => ({}))
-    if (!tokenResponse.ok || !tokenPayload.access_token) {
-      return NextResponse.json(
-        { error: tokenPayload?.error?.message || 'Meta rejected the Embedded Signup authorization code.' },
-        { status: 400 },
-      )
-    }
-
-    const accessToken = String(tokenPayload.access_token)
-
     const numbers = await listWabaPhoneNumbers({ wabaId, accessToken })
     if (!phoneNumberId) {
       if (numbers.length !== 1) {
