@@ -4,7 +4,7 @@ import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { encrypt } from '@/lib/whatsapp/encryption'
 import { listWabaPhoneNumbers, subscribeWabaToApp, verifyPhoneNumber } from '@/lib/whatsapp/meta-api'
 
-const META_API_VERSION = 'v21.0'
+const META_API_VERSION = 'v25.0'
 const GRAPH = `https://graph.facebook.com/${META_API_VERSION}`
 
 function admin() {
