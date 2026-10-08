@@ -159,10 +159,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         auth_type: 'rerequest',
         response_type: 'code',
         override_default_response_type: true,
-        extras: {
-          setup: {},
-          featureType: 'whatsapp_business_app_onboarding',
-        },
+        extras: {},,
       },
     )
   }
