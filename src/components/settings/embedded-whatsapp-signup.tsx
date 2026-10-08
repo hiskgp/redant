@@ -10,7 +10,7 @@ declare global {
     FB?: {
       init: (options: { appId: string; autoLogAppEvents?: boolean; cookie?: boolean; xfbml?: boolean; version: string; fedCM?: boolean }) => void
       login: (
-        callback: (response: { status?: string; authResponse?: { code?: string } }) => void,
+        callback: (response: { status?: string; authResponse?: { code?: string; accessToken?: string } }) => void,
         options: Record<string, unknown>,
       ) => void
     }
@@ -33,6 +33,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const codeRef = useRef<string | null>(null)
+  const accessTokenRef = useRef<string | null>(null)
   const dataRef = useRef<SignupData | null>(null)
   const submittedRef = useRef(false)
 
@@ -41,8 +42,9 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
 
   const completeSignup = useCallback(async () => {
     const code = codeRef.current
+    const accessToken = accessTokenRef.current
     const data = dataRef.current
-    if (!code || !data?.waba_id || !data?.phone_number_id || submittedRef.current) return
+    if ((!code && !accessToken) || !data?.waba_id || submittedRef.current) return
 
     submittedRef.current = true
     setBusy(true)
@@ -54,7 +56,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          code,
+          ...(code ? { code } : { access_token: accessToken }),
           waba_id: data.waba_id,
           phone_number_id: data.phone_number_id,
           business_id: data.business_id ?? data.businessId ?? null,
@@ -88,11 +90,12 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       if (data.event === 'PARTNER_ADDED' || data.event === 'FINISH' || data.event === 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING') {
         dataRef.current = data.data ?? null
         setError('')
-        if (codeRef.current) void completeSignup()
+        if (codeRef.current || accessTokenRef.current) void completeSignup()
         else setMessage('Meta finished setup. Waiting for the authorization response…')
       } else if (data.event === 'CANCEL') {
         submittedRef.current = false
         codeRef.current = null
+        accessTokenRef.current = null
         dataRef.current = null
         setBusy(false)
         setMessage('')
@@ -138,6 +141,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
   const launch = () => {
     if (!window.FB || !sdkReady || !configId) return
     codeRef.current = null
+    accessTokenRef.current = null
     dataRef.current = null
     submittedRef.current = false
     setError('')
@@ -146,12 +150,14 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     window.FB.login(
       (response) => {
         const code = response.authResponse?.code
-        if (!code) {
+        const accessToken = response.authResponse?.accessToken
+        if (!code && !accessToken) {
           setMessage('')
-          if (!response.authResponse) setError('Meta login did not return an authorization code. Please try again.')
+          setError('Meta login completed but returned neither an authorization code nor an access token. Please try again.')
           return
         }
-        codeRef.current = code
+        codeRef.current = code ?? null
+        accessTokenRef.current = accessToken ?? null
         if (dataRef.current) void completeSignup()
       },
       {
@@ -160,8 +166,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         override_default_response_type: true,
         extras: {
           setup: {},
-          featureType: '',
-          sessionInfoVersion: '3',
+          featureType: 'whatsapp_business_app_onboarding',
         },
       },
     )
