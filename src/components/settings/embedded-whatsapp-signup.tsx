@@ -85,7 +85,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch { return }
       if (data?.type !== 'WA_EMBEDDED_SIGNUP') return
 
-      if (data.event === 'FINISH' || data.event === 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING') {
+      if (data.event === 'PARTNER_ADDED' || data.event === 'FINISH' || data.event === 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING') {
         dataRef.current = data.data ?? null
         setError('')
         if (codeRef.current) void completeSignup()
@@ -159,7 +159,11 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         auth_type: 'rerequest',
         response_type: 'code',
         override_default_response_type: true,
-        extras: {},,
+        extras: {
+          setup: {},
+          featureType: '',
+          sessionInfoVersion: '3',
+        },
       },
     )
   }
