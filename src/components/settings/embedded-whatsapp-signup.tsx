@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 declare global {
   interface Window {
     FB?: {
-      init: (options: { appId: string; cookie?: boolean; xfbml?: boolean; version: string }) => void
+      init: (options: { appId: string; autoLogAppEvents?: boolean; cookie?: boolean; xfbml?: boolean; version: string; fedCM?: boolean }) => void
       login: (
         callback: (response: { status?: string; authResponse?: { code?: string } }) => void,
         options: Record<string, unknown>,
@@ -115,7 +115,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     }
 
     window.fbAsyncInit = () => {
-      window.FB?.init({ appId, cookie: true, xfbml: true, version: 'v21.0' })
+      window.FB?.init({ appId, autoLogAppEvents: true, cookie: true, xfbml: true, version: 'v25.0', fedCM: false })
       setSdkReady(true)
     }
 
