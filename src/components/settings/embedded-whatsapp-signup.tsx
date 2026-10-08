@@ -80,7 +80,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     }
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== 'https://www.facebook.com' && event.origin !== 'https://facebook.com' && event.origin !== 'https://web.facebook.com') return
+      if (event.origin !== 'https://www.facebook.com') return
       let data: { type?: string; event?: string; data?: SignupData & { current_step?: string; error_message?: string } }
       try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch { return }
       if (data?.type !== 'WA_EMBEDDED_SIGNUP') return
@@ -156,7 +156,6 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       },
       {
         config_id: configId,
-        auth_type: 'rerequest',
         response_type: 'code',
         override_default_response_type: true,
         extras: {
