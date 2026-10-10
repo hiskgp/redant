@@ -307,6 +307,50 @@ function ProductPreview() {
 export default function RootPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-950 dark:bg-slate-950 dark:text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": "https://redant.in/#organization",
+                name: "RedANT",
+                url: "https://redant.in/",
+                description:
+                  "RedANT helps businesses manage WhatsApp customer conversations, AI-assisted replies, follow-ups, and messaging automation.",
+              },
+              {
+                "@type": "WebSite",
+                "@id": "https://redant.in/#website",
+                url: "https://redant.in/",
+                name: "RedANT",
+                publisher: { "@id": "https://redant.in/#organization" },
+                inLanguage: "en-IN",
+              },
+              {
+                "@type": "SoftwareApplication",
+                "@id": "https://redant.in/#software",
+                name: "RedANT",
+                url: "https://redant.in/",
+                applicationCategory: "BusinessApplication",
+                operatingSystem: "Web",
+                description:
+                  "WhatsApp CRM and automation for businesses to organize customer conversations, use AI-assisted replies, follow up with leads, and manage messaging workflows.",
+                publisher: { "@id": "https://redant.in/#organization" },
+                offers: {
+                  "@type": "Offer",
+                  priceCurrency: "INR",
+                  price: "999",
+                  category: "subscription",
+                  url: "https://redant.in/#pricing",
+                },
+              },
+            ],
+          }),
+        }}
+      />
       {/* Hero */}
       <section className="relative">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(239,68,68,0.14),transparent_45%)]" />
