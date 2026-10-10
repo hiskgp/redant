@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   },
   description: "RedANT WhatsApp CRM + AI + Automation",
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
   icons: {
     icon: [{ url: "/icon" }],
