@@ -21,14 +21,41 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://redant.in"),
   title: {
-    default: "RedANT",
-    template: "%s — RedANT",
+    default: "RedANT | WhatsApp CRM, AI Replies & Automation",
+    template: "%s | RedANT",
   },
-  description: "RedANT WhatsApp CRM + AI + Automation",
+  description:
+    "Manage WhatsApp customer conversations, AI-assisted replies, follow-ups, and automation with RedANT. Built for growing businesses in India and worldwide.",
+  alternates: {
+    canonical: "/",
+  },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "RedANT",
+    title: "RedANT | WhatsApp CRM, AI Replies & Automation",
+    description:
+      "Manage WhatsApp customer conversations, AI-assisted replies, follow-ups, and automation with RedANT.",
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RedANT | WhatsApp CRM, AI Replies & Automation",
+    description:
+      "Manage WhatsApp customer conversations, AI-assisted replies, follow-ups, and automation with RedANT.",
   },
   icons: {
     icon: [{ url: "/icon" }],
