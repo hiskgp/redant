@@ -90,6 +90,13 @@ const THEME_BOOT_SCRIPT = `
     var THEME_DEFAULT = ${JSON.stringify(DEFAULT_THEME)};
     var THEMES = ${JSON.stringify(THEME_IDS)};
     var savedTheme = localStorage.getItem(THEME_KEY);
+    // Keep the product's primary accent consistent across the public
+    // website and authenticated workspace. Migrate previous default
+    // accents to RedANT Green once; users can still change themes later.
+    if (!savedTheme || savedTheme === "violet" || savedTheme === "rose") {
+      savedTheme = "emerald";
+      try { localStorage.setItem(THEME_KEY, savedTheme); } catch (_e) {}
+    }
     d.dataset.theme = THEMES.indexOf(savedTheme) !== -1 ? savedTheme : THEME_DEFAULT;
 
     var MODE_KEY = ${JSON.stringify(MODE_STORAGE_KEY)};
