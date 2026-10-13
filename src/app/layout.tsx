@@ -58,7 +58,7 @@ export const metadata: Metadata = {
       "Manage WhatsApp customer conversations, AI-assisted replies, follow-ups, and automation with RedANT.",
   },
   icons: {
-    icon: [{ url: "/icon" }],
+    icon: [{ url: "/redant_logo_crop.png", type: "image/png" }],
   },
   formatDetection: {
     email: false,

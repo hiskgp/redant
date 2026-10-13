@@ -1,6 +1,6 @@
 'use client'
 
-import { Bug } from 'lucide-react'
+import Image from 'next/image'
 
 type BrandLogoProps = {
   compact?: boolean
@@ -9,16 +9,23 @@ type BrandLogoProps = {
 
 /**
  * Shared RedANT brand mark used by the public site and signed-in app.
- * Keep the red ant mark and wordmark identical across both surfaces.
+ * Uses the official mascot asset from /public/redant_logo_crop.png.
  */
 export function BrandLogo({ compact = false, className = '' }: BrandLogoProps) {
   return (
     <span className={`inline-flex min-w-0 items-center gap-2.5 ${className}`}>
       <span
-        aria-hidden="true"
-        className="grid size-9 shrink-0 place-items-center rounded-xl bg-red-600 text-white shadow-md shadow-red-600/20"
+        aria-hidden={compact ? undefined : true}
+        className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-white"
       >
-        <Bug className="size-5" strokeWidth={2.4} />
+        <Image
+          src="/redant_logo_crop.png"
+          alt={compact ? 'RedANT logo' : ''}
+          width={36}
+          height={36}
+          priority
+          className="size-9 object-contain"
+        />
       </span>
       {!compact && (
         <span className="whitespace-nowrap text-xl font-extrabold tracking-tight text-foreground">
