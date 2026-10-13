@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
@@ -6,6 +7,63 @@ import { listWabaPhoneNumbers, subscribeWabaToApp, verifyPhoneNumber } from '@/l
 
 const META_API_VERSION = 'v25.0'
 const GRAPH = `https://graph.facebook.com/${META_API_VERSION}`
+
+type LogLevel = 'info' | 'warn' | 'error'
+
+function safeLogText(value: string) {
+  return value
+    .replace(/(access_token|client_secret|app_secret|authorization|code)=([^&\\s]+)/gi, '$1=[REDACTED]')
+    .replace(/Bearer\\s+[^\\s]+/gi, 'Bearer [REDACTED]')
+    .slice(0, 1200)
+}
+
+function signupLog(
+  level: LogLevel,
+  event: string,
+  requestId: string,
+  fields: Record<string, string | number | boolean | null | undefined> = {},
+  error?: unknown,
+) {
+  const safeFields: Record<string, string | number | boolean | null | undefined> = {}
+  for (const [key, value] of Object.entries(fields)) {
+    // Never write credentials, phone numbers, email addresses, or raw payloads to logs.
+    if (/token|secret|authorization|auth_code|phone|email|payload|message_body/i.test(key)) continue
+    safeFields[key] = typeof value === 'string' ? safeLogText(value) : value
+  }
+
+  const err = error instanceof Error ? error as Error & {
+    code?: number | string | null
+    subcode?: number | string | null
+    fbtraceId?: string | null
+    httpStatus?: number | null
+    type?: string | null
+    details?: string | null
+  } : null
+
+  const record = {
+    timestamp: new Date().toISOString(),
+    level,
+    service: 'redant',
+    route: '/api/whatsapp/embedded-signup',
+    event,
+    request_id: requestId,
+    ...safeFields,
+    ...(error !== undefined ? {
+      error_name: err?.name ?? 'UnknownError',
+      error_message: safeLogText(err?.message ?? String(error)),
+      ...(err?.code != null ? { meta_error_code: err.code } : {}),
+      ...(err?.subcode != null ? { meta_error_subcode: err.subcode } : {}),
+      ...(err?.fbtraceId ? { meta_fbtrace_id: safeLogText(err.fbtraceId) } : {}),
+      ...(err?.httpStatus != null ? { upstream_http_status: err.httpStatus } : {}),
+      ...(err?.type ? { meta_error_type: safeLogText(err.type) } : {}),
+      ...(err?.details ? { meta_error_details: safeLogText(err.details) } : {}),
+    } : {}),
+  }
+  const line = JSON.stringify(record)
+  if (level === 'error') console.error(line)
+  else if (level === 'warn') console.warn(line)
+  else console.info(line)
+}
 
 function admin() {
   return createAdminClient(
@@ -20,13 +78,26 @@ async function resolveAccountId(supabase: Awaited<ReturnType<typeof createClient
 }
 
 export async function POST(request: Request) {
+  const suppliedRequestId = request.headers.get('x-request-id')
+  const requestId = suppliedRequestId && /^[a-zA-Z0-9._-]{1,100}$/.test(suppliedRequestId)
+    ? suppliedRequestId
+    : randomUUID()
+
+  signupLog('info', 'signup.request_received', requestId)
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user) {
+      signupLog('warn', 'signup.unauthorized', requestId, { http_status: 401 })
+      return NextResponse.json({ error: 'Unauthorized', request_id: requestId }, { status: 401 })
+    }
 
     const accountId = await resolveAccountId(supabase, user.id)
-    if (!accountId) return NextResponse.json({ error: 'Your profile is not linked to an account.' }, { status: 403 })
+    if (!accountId) {
+      signupLog('warn', 'signup.account_not_linked', requestId, { http_status: 403 })
+      return NextResponse.json({ error: 'Your profile is not linked to an account.', request_id: requestId }, { status: 403 })
+    }
 
     const body = await request.json()
     const code = typeof body.code === 'string' ? body.code.trim() : ''
@@ -34,8 +105,9 @@ export async function POST(request: Request) {
     const wabaId = typeof body.waba_id === 'string' ? body.waba_id.trim() : ''
     let phoneNumberId = typeof body.phone_number_id === 'string' ? body.phone_number_id.trim() : ''
 
-    if ((!code && !accessTokenFromClient) || !/^\d+$/.test(wabaId)) {
-      return NextResponse.json({ error: 'Meta did not return a valid signup credential or WABA ID.' }, { status: 400 })
+    if ((!code && !accessTokenFromClient) || !/^\\d+$/.test(wabaId)) {
+      signupLog('warn', 'signup.invalid_meta_response', requestId, { has_code: Boolean(code), has_client_token: Boolean(accessTokenFromClient), has_waba_id: /^\\d+$/.test(wabaId), http_status: 400 })
+      return NextResponse.json({ error: 'Meta did not return a valid signup credential or WABA ID.', request_id: requestId }, { status: 400 })
     }
 
     let accessToken = accessTokenFromClient
@@ -44,7 +116,8 @@ export async function POST(request: Request) {
       const appId = process.env.META_APP_ID
       const appSecret = process.env.META_APP_SECRET?.split(',')[0]?.trim()
       if (!appId || !appSecret) {
-        return NextResponse.json({ error: 'Meta Embedded Signup is not configured on the server. Set META_APP_ID and META_APP_SECRET.' }, { status: 500 })
+        signupLog('error', 'signup.server_meta_config_missing', requestId, { has_app_id: Boolean(appId), has_app_secret: Boolean(appSecret), http_status: 500 })
+        return NextResponse.json({ error: 'Meta Embedded Signup is not configured on the server. Set META_APP_ID and META_APP_SECRET.', request_id: requestId }, { status: 500 })
       }
 
       const tokenUrl = new URL(`${GRAPH}/oauth/access_token`)
@@ -55,62 +128,87 @@ export async function POST(request: Request) {
       const tokenResponse = await fetch(tokenUrl, { cache: 'no-store' })
       const tokenPayload = await tokenResponse.json().catch(() => ({}))
       if (!tokenResponse.ok || !tokenPayload.access_token) {
+        signupLog('error', 'signup.authorization_code_exchange_failed', requestId, { upstream_http_status: tokenResponse.status, meta_error_code: tokenPayload?.error?.code ?? null, meta_error_subcode: tokenPayload?.error?.error_subcode ?? null, meta_error_type: tokenPayload?.error?.type ?? null, meta_fbtrace_id: tokenPayload?.error?.fbtrace_id ?? null, error_message: typeof tokenPayload?.error?.message === 'string' ? safeLogText(tokenPayload.error.message) : 'Meta did not return an access token' })
         return NextResponse.json(
-          { error: tokenPayload?.error?.message || 'Meta rejected the Embedded Signup authorization code.' },
+          { error: tokenPayload?.error?.message || 'Meta rejected the Embedded Signup authorization code.', request_id: requestId },
           { status: 400 },
         )
       }
 
       accessToken = String(tokenPayload.access_token)
+      signupLog('info', 'signup.authorization_code_exchange_succeeded', requestId)
+    } else {
+      signupLog('info', 'signup.client_credential_received', requestId)
     }
+
     const numbers = await listWabaPhoneNumbers({ wabaId, accessToken })
+    signupLog('info', 'signup.waba_phone_numbers_loaded', requestId, { number_count: numbers.length })
+
     if (!phoneNumberId) {
       if (numbers.length !== 1) {
-        return NextResponse.json({ error: 'Meta did not return a Phone Number ID and this WABA has multiple numbers. RedANT cannot safely choose a number.' }, { status: 400 })
+        signupLog('warn', 'signup.phone_number_selection_ambiguous', requestId, { number_count: numbers.length, http_status: 400 })
+        return NextResponse.json({ error: 'Meta did not return a Phone Number ID and this WABA has multiple numbers. RedANT cannot safely choose a number.', request_id: requestId }, { status: 400 })
       }
       phoneNumberId = numbers[0].id
     }
-    if (!/^\d+$/.test(phoneNumberId)) {
-      return NextResponse.json({ error: 'Meta returned an invalid Phone Number ID.' }, { status: 400 })
+    if (!/^\\d+$/.test(phoneNumberId)) {
+      signupLog('warn', 'signup.invalid_phone_number_id', requestId, { http_status: 400 })
+      return NextResponse.json({ error: 'Meta returned an invalid Phone Number ID.', request_id: requestId }, { status: 400 })
     }
 
     let phoneInfo
     try {
       phoneInfo = await verifyPhoneNumber({ phoneNumberId, accessToken })
-    } catch {
-      return NextResponse.json({ error: 'Meta issued a token, but RedANT could not verify the selected WhatsApp phone number.' }, { status: 400 })
+      signupLog('info', 'signup.phone_number_verified', requestId)
+    } catch (error) {
+      signupLog('error', 'signup.phone_number_verification_failed', requestId, {}, error)
+      return NextResponse.json({ error: 'Meta issued a token, but RedANT could not verify the selected WhatsApp phone number.', request_id: requestId }, { status: 400 })
     }
 
     if (!numbers.some((n) => n.id === phoneNumberId)) {
-      return NextResponse.json({ error: 'The selected WhatsApp phone number does not belong to the WABA returned by Meta.' }, { status: 400 })
+      signupLog('warn', 'signup.phone_number_not_in_waba', requestId, { http_status: 400 })
+      return NextResponse.json({ error: 'The selected WhatsApp phone number does not belong to the WABA returned by Meta.', request_id: requestId }, { status: 400 })
     }
 
     try {
       await subscribeWabaToApp({ wabaId, accessToken })
-    } catch {
-      return NextResponse.json({ error: 'The WhatsApp account was authorized, but Meta did not allow RedANT to subscribe the WABA to its webhook.' }, { status: 400 })
+      signupLog('info', 'signup.webhook_subscription_succeeded', requestId)
+    } catch (error) {
+      signupLog('error', 'signup.webhook_subscription_failed', requestId, {}, error)
+      return NextResponse.json({ error: 'The WhatsApp account was authorized, but Meta did not allow RedANT to subscribe the WABA to its webhook.', request_id: requestId }, { status: 400 })
     }
 
-    const { data: claimed } = await admin()
+    const { data: claimed, error: claimError } = await admin()
       .from('whatsapp_config')
       .select('account_id')
       .eq('phone_number_id', phoneNumberId)
       .neq('account_id', accountId)
       .maybeSingle()
 
+    if (claimError) {
+      signupLog('error', 'signup.phone_number_ownership_check_failed', requestId, { db_error_code: claimError.code, db_error_message: safeLogText(claimError.message) })
+      return NextResponse.json({ error: 'RedANT could not verify ownership of this WhatsApp number. Please retry.', request_id: requestId }, { status: 500 })
+    }
+
     if (claimed) {
-      return NextResponse.json({ error: 'This WhatsApp phone number is already linked to another RedANT account.' }, { status: 409 })
+      signupLog('warn', 'signup.phone_number_already_linked', requestId, { http_status: 409 })
+      return NextResponse.json({ error: 'This WhatsApp phone number is already linked to another RedANT account.', request_id: requestId }, { status: 409 })
     }
 
     const encryptedAccessToken = encrypt(accessToken)
     const verifyToken = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN?.trim() || null
     const now = new Date().toISOString()
 
-    const { data: existing } = await supabase
+    const { data: existing, error: existingError } = await supabase
       .from('whatsapp_config')
       .select('id')
       .eq('account_id', accountId)
       .maybeSingle()
+
+    if (existingError) {
+      signupLog('error', 'signup.existing_connection_lookup_failed', requestId, { db_error_code: existingError.code, db_error_message: safeLogText(existingError.message) })
+      return NextResponse.json({ error: 'RedANT could not check the existing WhatsApp connection.', request_id: requestId }, { status: 500 })
+    }
 
     const row = {
       account_id: accountId,
@@ -131,20 +229,23 @@ export async function POST(request: Request) {
       : await supabase.from('whatsapp_config').insert(row)
 
     if (result.error) {
-      console.error('[embedded-signup] database save failed:', result.error)
-      return NextResponse.json({ error: 'Meta connection succeeded, but RedANT could not save the connection.' }, { status: 500 })
+      signupLog('error', 'signup.database_save_failed', requestId, { db_error_code: result.error.code, db_error_message: safeLogText(result.error.message) })
+      return NextResponse.json({ error: 'Meta connection succeeded, but RedANT could not save the connection.', request_id: requestId }, { status: 500 })
     }
+
+    signupLog('info', 'signup.completed', requestId, { webhook_verify_token_configured: Boolean(verifyToken) })
 
     return NextResponse.json({
       success: true,
       registered: false,
+      request_id: requestId,
       phone_info: phoneInfo,
       waba_id: wabaId,
       phone_number_id: phoneNumberId,
       webhook_verify_token_configured: Boolean(verifyToken),
     })
   } catch (error) {
-    console.error('[embedded-signup] unexpected error:', error)
-    return NextResponse.json({ error: 'Failed to complete WhatsApp Embedded Signup.' }, { status: 500 })
+    signupLog('error', 'signup.unexpected_failure', requestId, {}, error)
+    return NextResponse.json({ error: 'Failed to complete WhatsApp Embedded Signup.', request_id: requestId }, { status: 500 })
   }
 }
