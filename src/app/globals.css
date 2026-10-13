@@ -228,3 +228,29 @@ html[data-theme="rose"] {
     @apply font-sans;
   }
 }
+
+/* RedANT homepage product-device motion: subtle, low-distraction and reduced-motion safe. */
+@keyframes redant-device-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(0deg); }
+}
+@keyframes redant-glow-pulse {
+  0%, 100% { opacity: .45; transform: scale(.98); }
+  50% { opacity: .8; transform: scale(1.04); }
+}
+@keyframes redant-message-arrive {
+  0%, 100% { box-shadow: 0 1px 2px rgb(15 23 42 / .06); }
+  50% { box-shadow: 0 8px 24px rgb(16 185 129 / .13); }
+}
+.redant-device-inbox { animation: redant-device-float 6s ease-in-out infinite; transform-origin: center; }
+.redant-device-site { animation: redant-device-float 6.8s ease-in-out infinite; animation-delay: -2.4s; }
+.redant-device-inbox > div:last-child > div:first-child { animation: redant-message-arrive 4s ease-in-out infinite; }
+.redant-device + .redant-device { will-change: transform; }
+@media (hover: hover) and (pointer: fine) {
+  .redant-device { transition: box-shadow .25s ease, filter .25s ease; }
+  .redant-device:hover { filter: saturate(1.04); box-shadow: 0 32px 70px -22px rgb(15 23 42 / .38); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .redant-device-inbox, .redant-device-site, .redant-device-inbox > div:last-child > div:first-child { animation: none !important; }
+  .redant-device { transition: none !important; }
+}

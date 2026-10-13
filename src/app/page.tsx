@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import { BrandLogo } from '@/components/brand-logo'
 import {
   ArrowRight,
@@ -188,10 +189,13 @@ const conversations: Conversation[] = [
 ]
 
 function ProductPreview() {
+  const [replyUsed, setReplyUsed] = useState(false)
+  const [demoPlaying, setDemoPlaying] = useState(false)
+
   return (
     <div className="relative mx-auto flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5">
       <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-red-400/25 via-rose-500/10 to-emerald-400/25 blur-3xl" />
-      <div className="relative mx-auto w-full max-w-[16rem] shrink select-none rounded-[2.75rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl shadow-emerald-950/20 dark:border-slate-700">
+      <div className="redant-device redant-device-inbox relative mx-auto w-full max-w-[16rem] shrink select-none rounded-[2.75rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl shadow-emerald-950/20 dark:border-slate-700">
         <div className="overflow-hidden rounded-[2.1rem] bg-white text-slate-950">
           <div className="flex items-center justify-between bg-white px-5 pb-3 pt-4 text-[10px] font-semibold">
             <span>9:41</span>
@@ -248,11 +252,11 @@ function ProductPreview() {
                 AI reply suggestion
               </div>
               <p className="mt-1.5 text-[10px] leading-4 text-slate-600">
-                “Yes, the red dress is available! Would you like to see the size options?”
+                {replyUsed ? "Reply added to the composer. Review it before sending." : "“Yes, the red dress is available! Would you like to see the size options?”"}
               </p>
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-[9px] text-slate-400">Review before sending</span>
-                <span className="rounded-lg bg-red-600 px-3 py-1.5 text-[10px] font-semibold text-white">Use reply</span>
+                <span <button type="button" onClick={() => setReplyUsed(true)} className="rounded-lg bg-red-600 px-3 py-1.5 text-[10px] font-semibold text-white transition hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">{replyUsed ? "Reply added ✓" : "Use reply"}</button>
               </div>
             </div>
           </div>
@@ -292,7 +296,7 @@ function ProductPreview() {
             <p className="mt-5 text-[17px] font-black leading-[1.15] tracking-tight">WhatsApp chat to <span className="text-emerald-600">online store.</span></p>
             <p className="mt-2 text-[9px] leading-4 text-slate-500">Turn conversations into shopping experiences with AI replies and automation.</p>
             <span className="mt-3 block rounded-full bg-emerald-600 px-2 py-2.5 text-center text-[9px] font-bold text-white shadow-sm shadow-emerald-900/20">Get started free <span aria-hidden="true">→</span></span>
-            <span className="mt-2 block rounded-full border border-emerald-200 bg-white px-2 py-2 text-center text-[9px] font-semibold text-emerald-700">▷ Watch demo</span>
+            <button type="button" onClick={() => setDemoPlaying((playing) => !playing)} className="mt-2 block w-full rounded-full border border-emerald-200 bg-white px-2 py-2 text-center text-[9px] font-semibold text-emerald-700 transition hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">{demoPlaying ? "✓ Demo preview active" : "▷ Watch demo"}</button>
           </div>
           <div className="space-y-3 bg-gradient-to-b from-emerald-50 to-white p-3">
             <div className="rounded-2xl border border-emerald-100 bg-white p-3 shadow-sm">
