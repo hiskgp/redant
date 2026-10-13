@@ -198,17 +198,14 @@ function ProductPreview() {
           <span className="h-3 w-3 rounded-full bg-amber-400" />
           <span className="h-3 w-3 rounded-full bg-emerald-400" />
           <span className="ml-3 text-xs font-medium text-slate-400">
-            RedANT Workspace
+            RedANT · Customer workspace
           </span>
         </div>
 
         <div className="grid min-h-[390px] grid-cols-[180px_1fr] sm:grid-cols-[220px_1fr]">
           <aside className="hidden border-r border-slate-200 p-4 sm:block dark:border-slate-800">
             <div className="mb-7 flex items-center gap-2 font-bold">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-red-600 text-sm text-white">
-                R
-              </span>
-              RedANT
+              <BrandLogo compact />
             </div>
 
             <div className="space-y-2 text-sm">
@@ -237,8 +234,8 @@ function ProductPreview() {
                   <h3 className="font-semibold">Customer conversations</h3>
                 </div>
 
-                <span className="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-semibold text-emerald-700">
-                  Live
+                <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">
+                  Inbox preview
                 </span>
               </div>
 
@@ -408,47 +405,55 @@ export default function RootPage() {
           </div>
         </nav>
 
-        <div className="mx-auto max-w-7xl px-6 pb-20 pt-16 text-center lg:px-8 lg:pb-28 lg:pt-24">
-          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
-            <Sparkles className="h-3.5 w-3.5" />
-            WhatsApp CRM + AI + Automation
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 pb-16 pt-12 lg:grid-cols-[0.88fr_1.12fr] lg:px-8 lg:pb-24 lg:pt-20">
+          <div className="text-center lg:text-left">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+              <Sparkles className="h-3.5 w-3.5" />
+              WhatsApp CRM · AI replies · Automation
+            </div>
+
+            <h1 className="text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+              Every customer conversation,{' '}
+              <span className="text-red-600">moving you forward.</span>
+            </h1>
+
+            <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8 lg:mx-0 dark:text-slate-300">
+              Keep WhatsApp chats, AI-assisted replies, customer follow-ups and
+              campaigns in one clear workspace—so your team can spend less time
+              switching tools and more time serving customers.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+              <Link
+                href="/signup"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-3.5 font-semibold text-white shadow-xl shadow-red-600/20 transition hover:bg-red-700"
+              >
+                Get started
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+
+              <a
+                href="#product"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-6 py-3.5 font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900"
+              >
+                <Play className="h-4 w-4" />
+                Explore the product
+              </a>
+            </div>
+
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-slate-500 lg:justify-start dark:text-slate-400">
+              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Shared team inbox</span>
+              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Automated follow-ups</span>
+              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> AI-assisted replies</span>
+            </div>
           </div>
 
-          <h1 className="mx-auto max-w-5xl text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl">
-            Turn WhatsApp conversations into{' '}
-            <span className="text-red-600">sales.</span>
-          </h1>
-
-          <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-slate-500 sm:text-xl dark:text-slate-300">
-            RedANT helps businesses manage customer conversations, automate
-            replies, follow up with leads and grow from one powerful WhatsApp
-            workspace.
-          </p>
-
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-3.5 font-semibold text-white shadow-xl shadow-red-600/20 transition hover:bg-red-700"
-            >
-              Start Free
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-
-            <a
-              href="#product"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-6 py-3.5 font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900"
-            >
-              <Play className="h-4 w-4" />
-              See how it works
-            </a>
+          <div id="product" className="min-w-0">
+            <ProductPreview />
+            <p className="mt-4 text-center text-xs text-slate-400">
+              Product preview · Illustrative conversations, not customer data
+            </p>
           </div>
-        </div>
-
-        <div
-          id="product"
-          className="mx-auto max-w-7xl px-6 pb-24 lg:px-8"
-        >
-          <ProductPreview />
         </div>
       </section>
 
