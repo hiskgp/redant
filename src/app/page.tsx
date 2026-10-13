@@ -391,7 +391,7 @@ export default function RootPage() {
 
             <Link
               href="/signup"
-              className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700"
+              className="rounded-xl bg-[#16A34A] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-green-600/20 transition hover:bg-[#15803D]"
             >
               Get started
             </Link>
@@ -406,20 +406,18 @@ export default function RootPage() {
             </div>
 
             <h1 className="text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-[4.35rem]">
-              Turn WhatsApp chats into{' '}
-              <span className="bg-gradient-to-r from-red-600 via-rose-600 to-orange-500 bg-clip-text text-transparent">better customer relationships.</span>
+              From WhatsApp chat to{' '}
+              <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-500 bg-clip-text text-transparent">online store.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8 lg:mx-0 dark:text-slate-300">
-              Manage customer chats, organize leads, draft AI-assisted replies
-              and keep follow-ups moving from one workspace—without losing track
-              of the people who want to buy from you.
+              Turn customer conversations into shopping journeys. Answer product questions, organize leads, and connect WhatsApp conversations with your existing online store workflows—all from one workspace.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-6 py-3.5 font-semibold text-white shadow-xl shadow-red-600/25 transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-600/30"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#16A34A] px-6 py-3.5 font-semibold text-white shadow-xl shadow-green-600/25 transition hover:-translate-y-0.5 hover:bg-[#15803D] hover:shadow-2xl hover:shadow-green-600/30"
               >
                 Get started
                 <ArrowRight className="h-4 w-4" />
@@ -465,6 +463,37 @@ export default function RootPage() {
             ),
           )}
         </div>
+      </section>
+
+      {/* WhatsApp to online store */}
+      <section id="shopping-journey" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-sm font-bold uppercase tracking-widest text-emerald-600">
+            Conversations that move commerce forward
+          </p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+            From WhatsApp chat to online store.
+          </h2>
+          <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
+            Help shoppers get answers, discover products, and continue to your store—with RedANT keeping customer conversations and follow-ups organized.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {[
+            { number: '01', title: 'Start a conversation', description: 'Customers ask about products, prices, sizes, delivery, and availability on WhatsApp.' },
+            { number: '02', title: 'Guide product discovery', description: 'Give helpful answers and guide shoppers to relevant products in your existing catalogue or store.' },
+            { number: '03', title: 'Continue to checkout', description: 'Direct customers to your online store and keep follow-ups connected to the conversation.' },
+          ].map((step) => (
+            <div key={step.number} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100 text-sm font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">{step.number}</span>
+              <h3 className="mt-5 text-lg font-bold">{step.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{step.description}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 text-center text-xs text-slate-400">
+          Store connections and checkout depend on your ecommerce platform and configured integrations.
+        </p>
       </section>
 
       {/* Features */}
@@ -702,20 +731,20 @@ export default function RootPage() {
 
       {/* CTA */}
       <section className="px-6 pb-24 lg:px-8">
-        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-red-700 via-red-600 to-rose-500 px-6 py-14 text-center text-white shadow-2xl shadow-red-600/25 sm:px-12">
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-700 via-green-600 to-teal-600 px-6 py-14 text-center text-white shadow-2xl shadow-green-600/25 sm:px-12">
           <div className="pointer-events-none absolute -right-10 -top-20 h-64 w-64 rounded-full border border-white/15" />
           <div className="pointer-events-none absolute -bottom-36 -left-12 h-72 w-72 rounded-full border border-white/15" />
           <h2 className="text-3xl font-black sm:text-4xl">
             Your customers are already on WhatsApp.
           </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-red-100">
+          <p className="mx-auto mt-4 max-w-2xl text-green-50">
             Start managing those conversations like a business with RedANT.
           </p>
 
           <Link
             href="/signup"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-red-700 transition hover:bg-red-50"
+            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-green-700 transition hover:bg-green-50"
           >
             Start with RedANT
             <ArrowRight className="h-4 w-4" />
@@ -724,15 +753,61 @@ export default function RootPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <div className="font-semibold text-slate-900 dark:text-white">
-            Red<span className="text-red-600">ANT</span>
+      <footer className="border-t border-slate-800 bg-slate-950 text-slate-300">
+        <div className="mx-auto max-w-7xl px-6 pb-10 pt-14 lg:px-8 lg:pt-16">
+          <div className="grid gap-10 lg:grid-cols-[1.4fr_2fr]">
+            <div className="max-w-md">
+              <Link href="/" aria-label="RedANT home" className="inline-flex items-center">
+                <BrandLogo />
+              </Link>
+              <h2 className="mt-6 text-2xl font-black leading-tight text-white sm:text-3xl">
+                From WhatsApp chat to online store.
+              </h2>
+              <p className="mt-4 text-sm leading-6 text-slate-400">
+                Bring customer conversations, AI-assisted replies, and follow-ups into one workspace built for growing businesses.
+              </p>
+              <Link href="/signup" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#16A34A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#15803D]">
+                Get started <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-6 gap-y-9 sm:grid-cols-3">
+              <div>
+                <h3 className="text-sm font-bold text-white">Product</h3>
+                <ul className="mt-4 space-y-3 text-sm">
+                  <li><a className="transition hover:text-emerald-400" href="#features">WhatsApp CRM</a></li>
+                  <li><a className="transition hover:text-emerald-400" href="#features">AI-assisted replies</a></li>
+                  <li><a className="transition hover:text-emerald-400" href="#features">Automation</a></li>
+                  <li><a className="transition hover:text-emerald-400" href="#features">Team inbox & broadcasts</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">Solutions</h3>
+                <ul className="mt-4 space-y-3 text-sm">
+                  <li><a className="transition hover:text-emerald-400" href="#shopping-journey">Online stores</a></li>
+                  <li><a className="transition hover:text-emerald-400" href="#how-it-works">Lead follow-ups</a></li>
+                  <li><a className="transition hover:text-emerald-400" href="#pricing">Plans for growing teams</a></li>
+                  <li><a className="transition hover:text-emerald-400" href="#faq">Common questions</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">Explore</h3>
+                <ul className="mt-4 space-y-3 text-sm">
+                  <li><a className="transition hover:text-emerald-400" href="#how-it-works">How it works</a></li>
+                  <li><a className="transition hover:text-emerald-400" href="#pricing">Pricing</a></li>
+                  <li><Link className="transition hover:text-emerald-400" href="/login">Log in</Link></li>
+                  <li><Link className="transition hover:text-emerald-400" href="/signup">Create account</Link></li>
+                </ul>
+              </div>
+            </div>
           </div>
 
-          <div>WhatsApp CRM · AI · Automation</div>
-
-          <div>© {new Date().getFullYear()} RedANT</div>
+          <div className="mt-12 border-t border-slate-800 pt-6">
+            <div className="flex flex-col gap-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+              <p>© {new Date().getFullYear()} RedANT. All rights reserved.</p>
+              <p>WhatsApp CRM · AI-assisted replies · Customer automation</p>
+            </div>
+          </div>
         </div>
       </footer>
     </main>
