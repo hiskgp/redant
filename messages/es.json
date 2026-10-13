@@ -496,7 +496,8 @@
       "toastSkipped_plural": "{count} duplicados omitidos",
       "toastFailed": "{count} contacto no se pudo importar",
       "toastFailed_plural": "{count} contactos no se pudieron importar",
-      "toastError": "Error en la importación"
+      "toastError": "Error en la importación",
+      "failedRowsHeading": "Filas con errores"
     },
     "customFields": {
       "title": "Campos personalizados",
