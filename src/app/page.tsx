@@ -290,12 +290,33 @@ function ProductPreview() {
           </div>
         </div>
       </div>
-      <div className="relative hidden h-[25.5rem] w-[12.25rem] shrink-0 -rotate-1 rounded-[2rem] border-[5px] border-slate-800 bg-slate-900 p-1 shadow-2xl shadow-red-950/20 lg:block">
-        <div className="overflow-hidden h-full overflow-hidden rounded-[1.45rem] bg-white text-slate-950">
-          <div className="flex items-center justify-between px-3 pb-2 pt-3 text-[9px] font-semibold"><span>9:41</span><span className="h-3 w-10 rounded-full bg-slate-950" aria-hidden="true" /><span>● ▰</span></div>
-          <div className="border-b border-slate-100 px-3 pb-3"><div className="flex items-center justify-between"><BrandLogo compact /><span className="text-[10px] font-bold">☰</span></div><p className="mt-4 text-[17px] font-black leading-tight">WhatsApp chat to <span className="text-emerald-600">online store.</span></p><p className="mt-2 text-[9px] leading-4 text-slate-500">Turn conversations into shopping experiences with AI replies and automation.</p><span className="mt-3 block rounded-full bg-emerald-600 px-2 py-2 text-center text-[9px] font-bold text-white">Get started free →</span><span className="mt-2 block rounded-full border border-emerald-200 px-2 py-2 text-center text-[9px] font-semibold text-emerald-700">▷ Watch demo</span></div>
-          <div className="bg-emerald-50/70 p-2.5"><div className="rounded-xl border border-emerald-100 bg-white p-2"><p className="text-[9px] font-bold">✦ How it works</p><div className="mt-2 rounded-lg bg-emerald-50 p-2 text-[9px] leading-4 text-slate-600">WhatsApp → Product discovery → Order</div><div className="mt-2 flex gap-1.5"><span className="h-12 flex-1 rounded-md bg-gradient-to-b from-emerald-100 to-white" /><span className="h-12 flex-1 rounded-md bg-gradient-to-b from-rose-100 to-white" /></div></div><div className="mt-2 rounded-xl bg-gradient-to-br from-emerald-950 via-emerald-800 to-red-700 p-2.5 text-white"><p className="text-[10px] font-bold leading-4">Ready to turn chats into sales?</p><span className="mt-2 block rounded-full bg-emerald-500 px-1 py-1.5 text-center text-[7px] font-bold">Get started free →</span></div></div>
-          <div className="flex justify-center bg-white pb-2 pt-1"><span className="h-1 w-12 rounded-full bg-slate-900" /></div>
+      {/* Realistic secondary phone: titanium-style frame, side buttons, island and clipped screen. */}
+      <div className="relative hidden h-[27rem] w-[13rem] shrink-0 -rotate-1 rounded-[2.45rem] border-[5px] border-slate-700 bg-gradient-to-br from-slate-500 via-slate-900 to-slate-600 p-[5px] shadow-[0_28px_60px_-20px_rgba(15,23,42,0.55)] lg:block">
+        <span className="absolute -left-[7px] top-20 h-8 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
+        <span className="absolute -left-[7px] top-32 h-12 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
+        <span className="absolute -right-[7px] top-28 h-14 w-[3px] rounded-r bg-slate-500" aria-hidden="true" />
+        <div className="relative h-full overflow-hidden rounded-[2rem] bg-white text-slate-950">
+          <div className="absolute left-1/2 top-[7px] z-20 flex h-[22px] w-[76px] -translate-x-1/2 items-center justify-end rounded-full bg-black px-2">
+            <span className="h-2 w-2 rounded-full bg-slate-800 ring-1 ring-slate-700" aria-hidden="true" />
+          </div>
+          <div className="flex items-center justify-between px-4 pb-2 pt-3 text-[9px] font-semibold"><span>9:41</span><span>● ▰</span></div>
+          <div className="border-b border-slate-100 px-3 pb-3 pt-3">
+            <div className="flex items-center justify-between"><BrandLogo compact /><span className="text-sm font-bold text-slate-700">☰</span></div>
+            <p className="mt-5 text-[17px] font-black leading-[1.15] tracking-tight">WhatsApp chat to <span className="text-emerald-600">online store.</span></p>
+            <p className="mt-2 text-[9px] leading-4 text-slate-500">Turn conversations into shopping experiences with AI replies and automation.</p>
+            <span className="mt-3 block rounded-full bg-emerald-600 px-2 py-2.5 text-center text-[9px] font-bold text-white shadow-sm shadow-emerald-900/20">Get started free <span aria-hidden="true">→</span></span>
+            <span className="mt-2 block rounded-full border border-emerald-200 bg-white px-2 py-2 text-center text-[9px] font-semibold text-emerald-700">▷ Watch demo</span>
+          </div>
+          <div className="space-y-3 bg-gradient-to-b from-emerald-50 to-white p-3">
+            <div className="rounded-2xl border border-emerald-100 bg-white p-3 shadow-sm">
+              <div className="flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-xl bg-emerald-100 text-xs text-emerald-700">↗</span><div><p className="text-[10px] font-bold">How it works</p><p className="text-[8px] text-slate-500">From chat to checkout</p></div></div>
+              <div className="mt-3 space-y-2"><div className="flex items-center gap-2 rounded-lg bg-slate-50 p-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-600 text-[9px] font-bold text-white">1</span><span className="text-[9px] font-medium">Discover products</span></div><div className="flex items-center gap-2 rounded-lg bg-slate-50 p-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-600 text-[9px] font-bold text-white">2</span><span className="text-[9px] font-medium">Answer questions</span></div><div className="flex items-center gap-2 rounded-lg bg-slate-50 p-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-red-500 text-[9px] font-bold text-white">3</span><span className="text-[9px] font-medium">Help complete orders</span></div></div>
+            </div>
+            <div className="rounded-2xl bg-gradient-to-br from-emerald-950 via-emerald-800 to-red-700 p-3 text-white shadow-md">
+              <p className="text-[10px] font-bold leading-4">Turn chats into sales.</p><p className="mt-1 text-[8px] leading-3 text-white/80">One conversation at a time.</p><span className="mt-3 block rounded-full bg-emerald-400 px-2 py-2 text-center text-[8px] font-bold text-emerald-950">Get started free →</span>
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 flex justify-center bg-white/95 pb-2 pt-1"><span className="h-1 w-16 rounded-full bg-slate-900" aria-hidden="true" /></div>
         </div>
       </div>
     </div>
