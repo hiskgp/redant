@@ -190,124 +190,61 @@ const conversations: Conversation[] = [
 
 function ProductPreview() {
   const [replyUsed, setReplyUsed] = useState(false)
-  const [demoPlaying, setDemoPlaying] = useState(false)
 
   return (
-    <div className="relative mx-auto flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5">
-      <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-red-400/25 via-rose-500/10 to-emerald-400/25 blur-3xl" />
-      <div className="redant-device redant-device-inbox relative mx-auto w-full max-w-[14.5rem] shrink select-none rounded-[2.5rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl shadow-emerald-950/20 dark:border-slate-700">
-        <div className="overflow-hidden rounded-[2.1rem] bg-white text-slate-950">
-          <div className="flex items-center justify-between bg-white px-5 pb-3 pt-4 text-[10px] font-semibold">
+    <div className="relative mx-auto flex w-full max-w-md items-center justify-center px-3 py-4 sm:py-6">
+      <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-red-400/20 via-rose-500/10 to-emerald-400/25 blur-3xl" />
+      <div className="redant-device relative w-full max-w-[17rem] rounded-[2.7rem] border-[7px] border-[#24262b] bg-[#24262b] p-[5px] shadow-[0_30px_70px_-24px_rgba(15,23,42,0.55)] sm:max-w-[18rem]">
+        <span className="pointer-events-none absolute -left-[9px] top-24 h-9 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
+        <span className="pointer-events-none absolute -left-[9px] top-36 h-12 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
+        <span className="pointer-events-none absolute -right-[9px] top-32 h-14 w-[3px] rounded-r bg-slate-500" aria-hidden="true" />
+        <div className="relative overflow-hidden rounded-[2.15rem] bg-[#efeae2] text-slate-950">
+          <div className="relative z-10 flex h-8 items-center justify-between bg-[#f8f8f8] px-5 text-[10px] font-semibold">
             <span>9:41</span>
-            <span className="h-4 w-20 rounded-full bg-slate-950" aria-hidden="true" />
-            <span>●  ▰</span>
+            <span className="absolute left-1/2 top-1.5 h-[19px] w-[76px] -translate-x-1/2 rounded-full bg-black" aria-label="iPhone Dynamic Island" />
+            <span aria-hidden="true">● ▰</span>
           </div>
-
-          <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
-            <BrandLogo compact />
+          <div className="flex items-center gap-2.5 bg-[#075e54] px-3 py-3 text-white">
+            <span className="text-lg leading-none" aria-hidden="true">‹</span>
+            <div className="grid h-9 w-9 place-items-center rounded-full bg-white text-[11px] font-black text-emerald-800"><BrandLogo compact /></div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold">RedANT</p>
-              <p className="text-[10px] text-slate-500">Customer inbox</p>
+              <p className="truncate text-[12px] font-bold">Born Ruler Store</p>
+              <p className="text-[9px] text-emerald-100">business account</p>
             </div>
-            <span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">Preview</span>
+            <span className="text-sm" aria-hidden="true">⌕</span><span className="text-sm" aria-hidden="true">⋮</span>
           </div>
-
-          <div className="bg-slate-50 px-3 pb-3 pt-3">
-            <div className="mb-3 flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-red-600">Shared inbox</p>
-                <h3 className="mt-1 text-lg font-black">Conversations</h3>
-              </div>
-              <span className="rounded-xl bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm">3 chats</span>
+          <div className="relative min-h-[23rem] space-y-3 overflow-hidden px-3 py-4">
+            <div className="pointer-events-none absolute inset-0 opacity-[0.13]" style={{backgroundImage:"radial-gradient(#8f9b8d 0.7px, transparent 0.7px)",backgroundSize:"9px 9px"}} />
+            <div className="relative mx-auto w-fit rounded-md bg-[#fff4c7] px-3 py-1 text-[9px] font-medium text-slate-600 shadow-sm">TODAY</div>
+            <div className="relative mr-8 rounded-xl rounded-tl-sm bg-white px-3 py-2.5 text-[11px] leading-[1.55] shadow-sm">
+              Hi! Is this red dress available in size 6?
+              <div className="mt-1 text-right text-[8px] text-slate-400">10:41 AM</div>
             </div>
-
-            <div className="space-y-2">
-              {conversations.map((conversation, index) => (
-                <div
-                  key={conversation.name}
-                  className={`flex items-start gap-3 rounded-xl border bg-white p-2.5 shadow-sm ${
-                    index === 0 ? 'border-red-200 ring-1 ring-red-100' : 'border-slate-100'
-                  }`}
-                >
-                  <div className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-bold ${
-                    index === 0 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    {conversation.name.split(' ').map((part) => part[0]).join('').slice(0, 2)}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-xs font-bold">{conversation.name}</span>
-                      <span className="shrink-0 text-[10px] text-slate-400">{conversation.time}</span>
-                    </div>
-                    <p className="mt-1 truncate text-[11px] text-slate-500">{conversation.message}</p>
-                    {index === 0 && <span className="mt-2 inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[9px] font-semibold text-red-700">Needs reply</span>}
-                  </div>
-                </div>
-              ))}
+            <div className="relative ml-8 rounded-xl rounded-tr-sm bg-[#d9fdd3] px-3 py-2.5 text-[11px] leading-[1.55] shadow-sm">
+              Hi there! 😊 Yes, it’s available in size 6.
+              <div className="mt-1 flex items-center justify-end gap-1 text-[8px] text-slate-500">10:41 AM <span className="text-blue-500">✓✓</span></div>
             </div>
-
-            <div className="mt-3 rounded-xl border border-red-100 bg-white p-3 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold text-red-700">
-                <Sparkles className="h-4 w-4" />
-                AI reply suggestion
-              </div>
-              <p className="mt-1.5 text-[10px] leading-4 text-slate-600">
-                {replyUsed ? "Reply added to the composer. Review it before sending." : "“Yes, the red dress is available! Would you like to see the size options?”"}
-              </p>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-[9px] text-slate-400">Review before sending</span>
-                <button type="button" onClick={() => setReplyUsed(true)} className="rounded-lg bg-red-600 px-3 py-1.5 text-[10px] font-semibold text-white transition hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">{replyUsed ? "Reply added ✓" : "Use reply"}</button>
-              </div>
+            <div className="relative mr-8 rounded-xl rounded-tl-sm bg-white px-3 py-2.5 text-[11px] leading-[1.55] shadow-sm">
+              Great! Can I order with cash on delivery?
+              <div className="mt-1 text-right text-[8px] text-slate-400">10:42 AM</div>
+            </div>
+            <div className="relative ml-8 rounded-xl rounded-tr-sm bg-[#d9fdd3] px-3 py-2.5 text-[11px] leading-[1.55] shadow-sm">
+              {replyUsed ? "Absolutely! Cash on delivery is available. Want me to help you place your order?" : "Absolutely! Cash on delivery is available. Would you like me to help you place your order?"}
+              <div className="mt-1 flex items-center justify-end gap-1 text-[8px] text-slate-500">10:42 AM <span className="text-blue-500">✓✓</span></div>
+            </div>
+            <div className="relative rounded-xl border border-emerald-200 bg-white/95 p-2.5 shadow-sm">
+              <div className="flex items-center gap-1.5 text-[9px] font-bold text-emerald-700"><Sparkles className="h-3.5 w-3.5" /> RedANT AI suggestion</div>
+              <p className="mt-1 text-[9px] leading-4 text-slate-600">Reply in seconds, keep the conversation natural, and let your team take over when needed.</p>
+              <button type="button" onClick={() => setReplyUsed((used) => !used)} className="mt-2 w-full rounded-lg bg-emerald-600 px-3 py-2 text-[10px] font-bold text-white transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">{replyUsed ? "✓ Reply preview added" : "Preview AI reply"}</button>
             </div>
           </div>
-
-          <div className="grid grid-cols-4 border-t border-slate-100 bg-white px-2 py-2 text-center">
-            {[
-              { icon: Inbox, label: 'Inbox' },
-              { icon: MessageCircle, label: 'Contacts' },
-              { icon: Megaphone, label: 'Campaigns' },
-              { icon: Zap, label: 'Flows' },
-            ].map(({ icon: Icon, label }, index) => (
-              <div key={label} className={`flex flex-col items-center gap-1 text-[9px] font-medium ${
-                index === 0 ? 'text-red-600' : 'text-slate-400'
-              }`}>
-                <Icon className="h-4 w-4" />
-                {label}
-              </div>
-            ))}
+          <div className="flex items-center gap-2 bg-[#f7f7f7] px-2.5 py-2.5">
+            <span className="text-lg text-slate-500" aria-hidden="true">＋</span>
+            <div className="flex h-9 flex-1 items-center rounded-full bg-white px-3 text-[10px] text-slate-400 shadow-sm">Message</div>
+            <span className="text-sm text-slate-500" aria-hidden="true">⌁</span>
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-[#075e54] text-white" aria-hidden="true">➤</span>
           </div>
-          <div className="flex justify-center bg-white pb-2 pt-1">
-            <span className="h-1 w-24 rounded-full bg-slate-900" aria-hidden="true" />
-          </div>
-        </div>
-      </div>
-      {/* Realistic secondary phone: titanium-style frame, side buttons, island and clipped screen. */}
-      <div className="redant-device redant-device-site relative hidden h-[22rem] w-[10.75rem] shrink-0 -rotate-1 rounded-[2.1rem] border-[5px] border-slate-700 bg-gradient-to-br from-slate-500 via-slate-900 to-slate-600 p-[5px] shadow-[0_28px_60px_-20px_rgba(15,23,42,0.55)] lg:block">
-        <span className="absolute -left-[7px] top-20 h-8 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
-        <span className="absolute -left-[7px] top-32 h-12 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
-        <span className="absolute -right-[7px] top-28 h-14 w-[3px] rounded-r bg-slate-500" aria-hidden="true" />
-        <div className="relative h-full overflow-hidden rounded-[1.65rem] bg-white text-slate-950">
-          <div className="absolute left-1/2 top-[7px] z-20 flex h-[22px] w-[76px] -translate-x-1/2 items-center justify-end rounded-full bg-black px-2">
-            <span className="h-2 w-2 rounded-full bg-slate-800 ring-1 ring-slate-700" aria-hidden="true" />
-          </div>
-          <div className="flex items-center justify-between px-4 pb-2 pt-3 text-[9px] font-semibold"><span>9:41</span><span>● ▰</span></div>
-          <div className="border-b border-slate-100 px-3 pb-3 pt-3">
-            <div className="flex items-center justify-between"><BrandLogo compact /><span className="text-sm font-bold text-slate-700">☰</span></div>
-            <p className="mt-5 text-[17px] font-black leading-[1.15] tracking-tight">WhatsApp chat to <span className="text-emerald-600">online store.</span></p>
-            <p className="mt-2 text-[9px] leading-4 text-slate-500">Turn conversations into shopping experiences with AI replies and automation.</p>
-            <span className="mt-3 block rounded-full bg-emerald-600 px-2 py-2.5 text-center text-[9px] font-bold text-white shadow-sm shadow-emerald-900/20">Get started free <span aria-hidden="true">→</span></span>
-            <button type="button" onClick={() => setDemoPlaying((playing) => !playing)} className="mt-2 block w-full rounded-full border border-emerald-200 bg-white px-2 py-2 text-center text-[9px] font-semibold text-emerald-700 transition hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">{demoPlaying ? "✓ Demo preview active" : "▷ Watch demo"}</button>
-          </div>
-          <div className="space-y-3 bg-gradient-to-b from-emerald-50 to-white p-3">
-            <div className="rounded-2xl border border-emerald-100 bg-white p-3 shadow-sm">
-              <div className="flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-xl bg-emerald-100 text-xs text-emerald-700">↗</span><div><p className="text-[10px] font-bold">How it works</p><p className="text-[8px] text-slate-500">From chat to checkout</p></div></div>
-              <div className="mt-3 space-y-2"><div className="flex items-center gap-2 rounded-lg bg-slate-50 p-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-600 text-[9px] font-bold text-white">1</span><span className="text-[9px] font-medium">Discover products</span></div><div className="flex items-center gap-2 rounded-lg bg-slate-50 p-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-600 text-[9px] font-bold text-white">2</span><span className="text-[9px] font-medium">Answer questions</span></div><div className="flex items-center gap-2 rounded-lg bg-slate-50 p-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-red-500 text-[9px] font-bold text-white">3</span><span className="text-[9px] font-medium">Help complete orders</span></div></div>
-            </div>
-            <div className="rounded-2xl bg-gradient-to-br from-emerald-950 via-emerald-800 to-red-700 p-3 text-white shadow-md">
-              <p className="text-[10px] font-bold leading-4">Turn chats into sales.</p><p className="mt-1 text-[8px] leading-3 text-white/80">One conversation at a time.</p><span className="mt-3 block rounded-full bg-emerald-400 px-2 py-2 text-center text-[8px] font-bold text-emerald-950">Get started free →</span>
-            </div>
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 flex justify-center bg-white/95 pb-2 pt-1"><span className="h-1 w-16 rounded-full bg-slate-900" aria-hidden="true" /></div>
+          <div className="flex justify-center bg-[#f7f7f7] pb-2 pt-1"><span className="h-1 w-24 rounded-full bg-slate-900" aria-hidden="true" /></div>
         </div>
       </div>
     </div>
