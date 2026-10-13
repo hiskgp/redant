@@ -189,8 +189,8 @@ const conversations: Conversation[] = [
 
 function ProductPreview() {
   return (
-    <div className="relative mx-auto w-full max-w-lg">
-      <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-rose-400/30 via-red-500/10 to-emerald-400/20 blur-3xl" />
+    <div className="relative mx-auto flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5">
+      <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-red-400/25 via-rose-500/10 to-emerald-400/25 blur-3xl" />
       <div className="absolute -left-2 top-16 z-20 hidden rounded-2xl border border-white/70 bg-white/90 p-3.5 shadow-xl shadow-slate-900/10 backdrop-blur md:block lg:-left-12">
         <div className="flex items-center gap-2.5">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-100 text-emerald-700"><MessageCircle className="h-4 w-4" /></span>
@@ -204,7 +204,7 @@ function ProductPreview() {
         </div>
       </div>
 
-      <div className="relative mx-auto rounded-[2.75rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl dark:border-slate-700">
+      <div className="relative mx-auto w-full max-w-[17rem] shrink rounded-[2.75rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl shadow-emerald-950/20 dark:border-slate-700">
         <div className="overflow-hidden rounded-[2.1rem] bg-white text-slate-950">
           <div className="flex items-center justify-between bg-white px-5 pb-3 pt-4 text-[10px] font-semibold">
             <span>9:41</span>
@@ -290,6 +290,14 @@ function ProductPreview() {
           </div>
         </div>
       </div>
+      <div className="relative hidden w-[10.5rem] shrink-0 -rotate-2 rounded-[2.2rem] border-[6px] border-slate-900 bg-slate-900 p-1 shadow-2xl shadow-red-950/20 lg:block">
+        <div className="overflow-hidden rounded-[1.7rem] bg-white text-slate-950">
+          <div className="flex items-center justify-between px-3 pb-2 pt-3 text-[7px] font-semibold"><span>9:41</span><span className="h-3 w-10 rounded-full bg-slate-950" aria-hidden="true" /><span>● ▰</span></div>
+          <div className="border-b border-slate-100 px-3 pb-3"><div className="flex items-center justify-between"><BrandLogo compact /><span className="text-[10px] font-bold">☰</span></div><p className="mt-4 text-[15px] font-black leading-tight">WhatsApp chat to <span className="text-emerald-600">online store.</span></p><p className="mt-2 text-[8px] leading-4 text-slate-500">Turn conversations into shopping experiences with AI replies and automation.</p><span className="mt-3 block rounded-full bg-emerald-600 px-2 py-2 text-center text-[8px] font-bold text-white">Get started free →</span><span className="mt-2 block rounded-full border border-emerald-200 px-2 py-2 text-center text-[8px] font-semibold text-emerald-700">▷ Watch demo</span></div>
+          <div className="bg-emerald-50/70 p-2.5"><div className="rounded-xl border border-emerald-100 bg-white p-2"><p className="text-[8px] font-bold">✦ How it works</p><div className="mt-2 rounded-lg bg-emerald-50 p-2 text-[8px] leading-3 text-slate-600">WhatsApp → Product discovery → Order</div><div className="mt-2 flex gap-1.5"><span className="h-12 flex-1 rounded-md bg-gradient-to-b from-emerald-100 to-white" /><span className="h-12 flex-1 rounded-md bg-gradient-to-b from-rose-100 to-white" /></div></div><div className="mt-2 rounded-xl bg-gradient-to-br from-emerald-950 via-emerald-800 to-red-700 p-2.5 text-white"><p className="text-[9px] font-bold leading-3">Ready to turn chats into sales?</p><span className="mt-2 block rounded-full bg-emerald-500 px-1 py-1.5 text-center text-[7px] font-bold">Get started free →</span></div></div>
+          <div className="flex justify-center bg-white pb-2 pt-1"><span className="h-1 w-12 rounded-full bg-slate-900" /></div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -354,28 +362,28 @@ export default function RootPage() {
           <div className="hidden items-center gap-8 text-sm font-medium text-slate-500 md:flex dark:text-slate-300">
             <a
               href="#features"
-              className="transition hover:text-red-600"
+              className="transition hover:text-emerald-600"
             >
               Features
             </a>
 
             <a
               href="#how-it-works"
-              className="transition hover:text-red-600"
+              className="transition hover:text-emerald-600"
             >
               How it works
             </a>
 
             <a
               href="#pricing"
-              className="transition hover:text-red-600"
+              className="transition hover:text-emerald-600"
             >
               Pricing
             </a>
 
             <a
               href="#faq"
-              className="transition hover:text-red-600"
+              className="transition hover:text-emerald-600"
             >
               FAQ
             </a>
