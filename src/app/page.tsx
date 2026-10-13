@@ -189,8 +189,20 @@ const conversations: Conversation[] = [
 
 function ProductPreview() {
   return (
-    <div className="relative mx-auto w-full max-w-sm">
-      <div className="absolute -inset-8 rounded-full bg-red-500/15 blur-3xl" />
+    <div className="relative mx-auto w-full max-w-lg">
+      <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-rose-400/30 via-red-500/10 to-emerald-400/20 blur-3xl" />
+      <div className="absolute -left-2 top-16 z-20 hidden rounded-2xl border border-white/70 bg-white/90 p-3.5 shadow-xl shadow-slate-900/10 backdrop-blur md:block lg:-left-12">
+        <div className="flex items-center gap-2.5">
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-100 text-emerald-700"><MessageCircle className="h-4 w-4" /></span>
+          <div><p className="text-xs font-bold text-slate-900">Customer message</p><p className="mt-0.5 text-[10px] text-slate-500">Ready for your team</p></div>
+        </div>
+      </div>
+      <div className="absolute -right-1 bottom-28 z-20 hidden rounded-2xl border border-white/70 bg-white/95 p-3.5 shadow-xl shadow-slate-900/10 backdrop-blur md:block lg:-right-10">
+        <div className="flex items-center gap-2.5">
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet-100 text-violet-700"><Sparkles className="h-4 w-4" /></span>
+          <div><p className="text-xs font-bold text-slate-900">AI-assisted replies</p><p className="mt-0.5 text-[10px] text-slate-500">You review before sending</p></div>
+        </div>
+      </div>
 
       <div className="relative mx-auto rounded-[2.75rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl dark:border-slate-700">
         <div className="overflow-hidden rounded-[2.1rem] bg-white text-slate-950">
@@ -331,7 +343,8 @@ export default function RootPage() {
       />
       {/* Hero */}
       <section className="relative">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(239,68,68,0.14),transparent_45%)]" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_12%_12%,rgba(248,113,113,0.18),transparent_35%),radial-gradient(ellipse_at_88%_30%,rgba(16,185,129,0.10),transparent_28%)]" />
+        <div className="pointer-events-none absolute right-0 top-24 -z-10 h-72 w-72 rounded-full border border-red-100/70 dark:border-red-900/30" />
 
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <Link href="/" aria-label="RedANT home" className="inline-flex items-center">
@@ -389,12 +402,12 @@ export default function RootPage() {
           <div className="text-center lg:text-left">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
               <Sparkles className="h-3.5 w-3.5" />
-              WhatsApp CRM for growing businesses
+              WhatsApp CRM · Made for conversations that convert
             </div>
 
-            <h1 className="text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-[4.35rem]">
               Turn WhatsApp chats into{' '}
-              <span className="text-red-600">better customer relationships.</span>
+              <span className="bg-gradient-to-r from-red-600 via-rose-600 to-orange-500 bg-clip-text text-transparent">better customer relationships.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8 lg:mx-0 dark:text-slate-300">
@@ -406,7 +419,7 @@ export default function RootPage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-3.5 font-semibold text-white shadow-xl shadow-red-600/20 transition hover:bg-red-700"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-6 py-3.5 font-semibold text-white shadow-xl shadow-red-600/25 transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-600/30"
               >
                 Get started
                 <ArrowRight className="h-4 w-4" />
@@ -482,9 +495,9 @@ export default function RootPage() {
             return (
               <div
                 key={feature.title}
-                className="rounded-2xl border border-slate-200 p-6 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:border-slate-800 dark:hover:shadow-black/20"
+                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1.5 hover:border-red-200 hover:shadow-2xl hover:shadow-red-950/5 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-red-900 dark:hover:shadow-black/20"
               >
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-red-50 text-red-600 dark:bg-red-950/30 dark:text-red-300">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-red-50 to-rose-100 text-red-600 transition duration-300 group-hover:scale-110 dark:from-red-950/50 dark:to-rose-950/30 dark:text-red-300">
                   <Icon className="h-5 w-5" />
                 </div>
 
@@ -519,9 +532,9 @@ export default function RootPage() {
             {workflowSteps.map((step) => (
               <div
                 key={step.number}
-                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                className="group rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 transition hover:-translate-y-1 hover:border-red-400/40 hover:bg-white/[0.08]"
               >
-                <span className="text-sm font-bold text-red-400">
+                <span className="grid h-10 w-10 place-items-center rounded-xl border border-red-400/30 bg-red-500/10 text-sm font-bold text-red-300">
                   {step.number}
                 </span>
 
@@ -540,7 +553,8 @@ export default function RootPage() {
 
       {/* Businesses */}
       <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-8 dark:border-slate-800 dark:bg-slate-900/50 sm:p-12">
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-rose-50 via-white to-emerald-50 p-8 dark:border-slate-800 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-950/20 sm:p-12">
+          <div className="pointer-events-none absolute -right-12 -top-16 h-56 w-56 rounded-full bg-red-200/40 blur-3xl dark:bg-red-900/20" />
           <div className="max-w-2xl">
             <p className="text-sm font-bold uppercase tracking-widest text-red-600">
               Made for growing businesses
@@ -555,7 +569,7 @@ export default function RootPage() {
             {businesses.map((business) => (
               <span
                 key={business}
-                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium dark:border-slate-700 dark:bg-slate-950"
+                className="rounded-xl border border-white bg-white/85 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-red-200 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-200"
               >
                 {business}
               </span>
@@ -688,7 +702,9 @@ export default function RootPage() {
 
       {/* CTA */}
       <section className="px-6 pb-24 lg:px-8">
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl bg-red-600 px-6 py-14 text-center text-white shadow-2xl shadow-red-600/20 sm:px-12">
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-red-700 via-red-600 to-rose-500 px-6 py-14 text-center text-white shadow-2xl shadow-red-600/25 sm:px-12">
+          <div className="pointer-events-none absolute -right-10 -top-20 h-64 w-64 rounded-full border border-white/15" />
+          <div className="pointer-events-none absolute -bottom-36 -left-12 h-72 w-72 rounded-full border border-white/15" />
           <h2 className="text-3xl font-black sm:text-4xl">
             Your customers are already on WhatsApp.
           </h2>
