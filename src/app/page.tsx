@@ -389,18 +389,18 @@ export default function RootPage() {
           <div className="text-center lg:text-left">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
               <Sparkles className="h-3.5 w-3.5" />
-              WhatsApp CRM · AI replies · Automation
+              WhatsApp CRM for growing businesses
             </div>
 
             <h1 className="text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-              Every customer conversation,{' '}
-              <span className="text-red-600">moving you forward.</span>
+              Turn WhatsApp chats into{' '}
+              <span className="text-red-600">better customer relationships.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8 lg:mx-0 dark:text-slate-300">
-              Keep WhatsApp chats, AI-assisted replies, customer follow-ups and
-              campaigns in one clear workspace—so your team can spend less time
-              switching tools and more time serving customers.
+              Manage customer chats, organize leads, draft AI-assisted replies
+              and keep follow-ups moving from one workspace—without losing track
+              of the people who want to buy from you.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
@@ -422,9 +422,9 @@ export default function RootPage() {
             </div>
 
             <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-slate-500 lg:justify-start dark:text-slate-400">
-              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Shared team inbox</span>
-              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Automated follow-ups</span>
-              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> AI-assisted replies</span>
+              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Keep chats organized</span>
+              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Follow up with leads</span>
+              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Review AI reply drafts</span>
             </div>
           </div>
 
@@ -469,8 +469,9 @@ export default function RootPage() {
           </h2>
 
           <p className="mt-4 text-lg leading-8 text-slate-500 dark:text-slate-300">
-            Stop switching between chats, spreadsheets and disconnected tools.
-            Give your team one workspace for customer communication.
+            From product questions to order enquiries, keep conversations,
+            contacts and follow-ups together so your team can respond with more
+            context and less confusion.
           </p>
         </div>
 
@@ -546,8 +547,7 @@ export default function RootPage() {
             </p>
 
             <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-              Whether you sell products or services, your customers are already
-              on WhatsApp.
+              Built for the businesses customers message before they buy.
             </h2>
           </div>
 
@@ -580,11 +580,19 @@ export default function RootPage() {
             </h2>
 
             <p className="mt-4 text-slate-500 dark:text-slate-300">
-              Start small and move up as your customer conversations grow.
+              Choose a plan based on how your team works today. Confirm setup
+              requirements and any applicable WhatsApp or Meta messaging charges
+              before launching campaigns.
             </p>
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-5xl gap-5 md:grid-cols-3">
+          <p className="mx-auto mt-4 max-w-3xl text-center text-xs leading-5 text-slate-400">
+            Plan features and messaging charges should be confirmed for your
+            account before purchase. WhatsApp/Meta fees, where applicable, may
+            be separate from the RedANT subscription.
+          </p>
+
+          <div className="mx-auto mt-8 grid max-w-5xl gap-5 md:grid-cols-3">
             {plans.map((plan, index) => (
               <div
                 key={plan.name}
