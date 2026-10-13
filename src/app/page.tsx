@@ -800,9 +800,9 @@ export default function RootPage() {
           <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} RedANT. All rights reserved.</p>
             <div className="flex flex-wrap gap-x-5 gap-y-2">
-              <a href="#faq" className="transition hover:text-white">Help & FAQ</a>
-              <a href="#pricing" className="transition hover:text-white">Pricing</a>
-              <Link href="/signup" className="transition hover:text-white">Create account</Link>
+              <Link href="/privacy-policy" className="transition hover:text-white">Privacy Policy</Link>
+              <Link href="/terms" className="transition hover:text-white">Terms</Link>
+              <Link href="/support" className="transition hover:text-white">Support</Link>
             </div>
           </div>
         </div>
