@@ -195,7 +195,7 @@ function ProductPreview() {
   return (
     <div className="relative mx-auto flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5">
       <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-red-400/25 via-rose-500/10 to-emerald-400/25 blur-3xl" />
-      <div className="redant-device redant-device-inbox relative mx-auto w-full max-w-[16rem] shrink select-none rounded-[2.75rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl shadow-emerald-950/20 dark:border-slate-700">
+      <div className="redant-device redant-device-inbox relative mx-auto w-full max-w-[14.5rem] shrink select-none rounded-[2.5rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl shadow-emerald-950/20 dark:border-slate-700">
         <div className="overflow-hidden rounded-[2.1rem] bg-white text-slate-950">
           <div className="flex items-center justify-between bg-white px-5 pb-3 pt-4 text-[10px] font-semibold">
             <span>9:41</span>
@@ -282,11 +282,11 @@ function ProductPreview() {
         </div>
       </div>
       {/* Realistic secondary phone: titanium-style frame, side buttons, island and clipped screen. */}
-      <div className="relative hidden h-[27rem] w-[13rem] shrink-0 -rotate-1 rounded-[2.45rem] border-[5px] border-slate-700 bg-gradient-to-br from-slate-500 via-slate-900 to-slate-600 p-[5px] shadow-[0_28px_60px_-20px_rgba(15,23,42,0.55)] lg:block">
+      <div className="relative hidden h-[22rem] w-[10.75rem] shrink-0 -rotate-1 rounded-[2.1rem] border-[5px] border-slate-700 bg-gradient-to-br from-slate-500 via-slate-900 to-slate-600 p-[5px] shadow-[0_28px_60px_-20px_rgba(15,23,42,0.55)] lg:block">
         <span className="absolute -left-[7px] top-20 h-8 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
         <span className="absolute -left-[7px] top-32 h-12 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
         <span className="absolute -right-[7px] top-28 h-14 w-[3px] rounded-r bg-slate-500" aria-hidden="true" />
-        <div className="relative h-full overflow-hidden rounded-[2rem] bg-white text-slate-950">
+        <div className="relative h-full overflow-hidden rounded-[1.65rem] bg-white text-slate-950">
           <div className="absolute left-1/2 top-[7px] z-20 flex h-[22px] w-[76px] -translate-x-1/2 items-center justify-end rounded-full bg-black px-2">
             <span className="h-2 w-2 rounded-full bg-slate-800 ring-1 ring-slate-700" aria-hidden="true" />
           </div>
@@ -772,60 +772,37 @@ export default function RootPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 text-slate-300">
-        <div className="mx-auto max-w-7xl px-6 pb-10 pt-14 lg:px-8 lg:pt-16">
-          <div className="grid gap-10 lg:grid-cols-[1.4fr_2fr]">
-            <div className="max-w-md">
-              <Link href="/" aria-label="RedANT home" className="inline-flex items-center">
-                <BrandLogo />
-              </Link>
-              <h2 className="mt-6 text-2xl font-black leading-tight text-white sm:text-3xl">
-                From WhatsApp chat to online store.
-              </h2>
-              <p className="mt-4 text-sm leading-6 text-slate-400">
-                Bring customer conversations, AI-assisted replies, and follow-ups into one workspace built for growing businesses.
-              </p>
-              <Link href="/signup" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#16A34A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#15803D]">
-                Get started <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-6 gap-y-9 sm:grid-cols-3">
-              <div>
-                <h3 className="text-sm font-bold text-white">Product</h3>
-                <ul className="mt-4 space-y-3 text-sm">
-                  <li><a className="transition hover:text-emerald-400" href="#features">WhatsApp CRM</a></li>
-                  <li><a className="transition hover:text-emerald-400" href="#features">AI-assisted replies</a></li>
-                  <li><a className="transition hover:text-emerald-400" href="#features">Automation</a></li>
-                  <li><a className="transition hover:text-emerald-400" href="#features">Team inbox & broadcasts</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white">Solutions</h3>
-                <ul className="mt-4 space-y-3 text-sm">
-                  <li><a className="transition hover:text-emerald-400" href="#shopping-journey">Online stores</a></li>
-                  <li><a className="transition hover:text-emerald-400" href="#how-it-works">Lead follow-ups</a></li>
-                  <li><a className="transition hover:text-emerald-400" href="#pricing">Plans for growing teams</a></li>
-                  <li><a className="transition hover:text-emerald-400" href="#faq">Common questions</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white">Explore</h3>
-                <ul className="mt-4 space-y-3 text-sm">
-                  <li><a className="transition hover:text-emerald-400" href="#how-it-works">How it works</a></li>
-                  <li><a className="transition hover:text-emerald-400" href="#pricing">Pricing</a></li>
-                  <li><Link className="transition hover:text-emerald-400" href="/login">Log in</Link></li>
-                  <li><Link className="transition hover:text-emerald-400" href="/signup">Create account</Link></li>
-                </ul>
-              </div>
-            </div>
+      {/* Oversized brand footer inspired by the reference, using RedANT's own identity. */}
+      <footer className="overflow-hidden border-t border-slate-800 bg-[#020b24] text-slate-300">
+        <div className="mx-auto max-w-[1600px] px-6 pb-6 pt-10 sm:px-10 lg:px-12 lg:pt-12">
+          <div className="flex flex-wrap items-center justify-between gap-5">
+            <Link href="/" aria-label="RedANT home" className="inline-flex items-center gap-3">
+              <BrandLogo />
+              <span className="text-lg font-bold tracking-tight text-white">RedANT</span>
+            </Link>
+            <nav aria-label="Footer quick links" className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
+              <a className="transition hover:text-emerald-300" href="#features">Features</a>
+              <a className="transition hover:text-emerald-300" href="#shopping-journey">How it works</a>
+              <a className="transition hover:text-emerald-300" href="#pricing">Pricing</a>
+              <a className="transition hover:text-emerald-300" href="#faq">FAQ</a>
+              <Link className="transition hover:text-emerald-300" href="/login">Log in</Link>
+              <Link className="transition hover:text-emerald-300" href="/signup">Get started</Link>
+            </nav>
           </div>
 
-          <div className="mt-12 border-t border-slate-800 pt-6">
-            <div className="flex flex-col gap-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-              <p>© {new Date().getFullYear()} RedANT. All rights reserved.</p>
-              <p>WhatsApp CRM · AI-assisted replies · Customer automation</p>
+          <div className="relative mt-8 select-none overflow-hidden" aria-label="RedANT brand wordmark">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-emerald-400/10 via-transparent to-red-500/10 blur-2xl" />
+            <p className="relative whitespace-nowrap bg-gradient-to-b from-emerald-300 via-lime-400 to-emerald-500 bg-clip-text text-center text-[21vw] font-black leading-[0.78] tracking-[-0.075em] text-transparent sm:text-[18vw] lg:text-[16.5vw]">
+              RedANT
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} RedANT. All rights reserved.</p>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              <Link href="/privacy-policy" className="transition hover:text-white">Privacy Policy</Link>
+              <Link href="/terms" className="transition hover:text-white">Terms</Link>
+              <Link href="/support" className="transition hover:text-white">Support</Link>
             </div>
           </div>
         </div>
