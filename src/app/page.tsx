@@ -193,8 +193,9 @@ function ProductPreview() {
 
   return (
     <div className="relative mx-auto flex w-full max-w-md items-center justify-center px-3 py-4 sm:py-6">
-      <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-red-400/20 via-rose-500/10 to-emerald-400/25 blur-3xl" />
-      <div className="redant-device relative w-full max-w-[17rem] rounded-[2.7rem] border-[7px] border-[#24262b] bg-[#24262b] p-[5px] shadow-[0_30px_70px_-24px_rgba(15,23,42,0.55)] sm:max-w-[18rem]">
+      <div className="redant-orb pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-red-400/30 via-fuchsia-400/15 to-emerald-400/35 blur-3xl" style={{ animation: 'redant-glow 5s ease-in-out infinite' }} />
+      <div className="pointer-events-none absolute inset-x-5 top-10 h-64 rounded-[3rem] border border-white/70 bg-gradient-to-br from-white/60 via-rose-50/40 to-emerald-50/50 shadow-[inset_0_1px_0_rgba(255,255,255,.8)] backdrop-blur-sm" />
+      <div className="redant-device relative w-full max-w-[17rem] rounded-[2.7rem] border-[7px] border-[#24262b] bg-[#24262b] p-[5px] shadow-[0_35px_90px_-24px_rgba(15,23,42,0.65),0_0_0_1px_rgba(255,255,255,.7)] sm:max-w-[18rem]" style={{ animation: 'redant-float 6s ease-in-out infinite' }}>
         <span className="pointer-events-none absolute -left-[9px] top-24 h-9 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
         <span className="pointer-events-none absolute -left-[9px] top-36 h-12 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
         <span className="pointer-events-none absolute -right-[9px] top-32 h-14 w-[3px] rounded-r bg-slate-500" aria-hidden="true" />
@@ -254,6 +255,14 @@ function ProductPreview() {
 export default function RootPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-950 dark:bg-slate-950 dark:text-white">
+      <style jsx global>{`
+        @keyframes redant-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -12px, 0); } }
+        @keyframes redant-drift { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(14px, -10px, 0) scale(1.06); } }
+        @keyframes redant-glow { 0%, 100% { opacity: .48; } 50% { opacity: .9; } }
+        @keyframes redant-shimmer { 0% { transform: translateX(-150%) rotate(18deg); } 100% { transform: translateX(250%) rotate(18deg); } }
+        @keyframes redant-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @media (prefers-reduced-motion: reduce) { .redant-motion, .redant-device, .redant-orb, .redant-shimmer { animation: none !important; transition: none !important; } }
+      `}</style>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -300,8 +309,11 @@ export default function RootPage() {
       />
       {/* Hero */}
       <section className="relative">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_12%_12%,rgba(248,113,113,0.18),transparent_35%),radial-gradient(ellipse_at_88%_30%,rgba(16,185,129,0.10),transparent_28%)]" />
-        <div className="pointer-events-none absolute right-0 top-24 -z-10 h-72 w-72 rounded-full border border-red-100/70 dark:border-red-900/30" />
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[radial-gradient(ellipse_at_10%_8%,rgba(248,113,113,0.23),transparent_34%),radial-gradient(ellipse_at_88%_22%,rgba(16,185,129,0.17),transparent_30%),radial-gradient(ellipse_at_50%_72%,rgba(196,181,253,0.13),transparent_35%)]" />
+        <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 [background-image:linear-gradient(rgba(148,163,184,0.10)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.10)_1px,transparent_1px)] [background-size:42px_42px] [mask-image:linear-gradient(to_bottom,black,transparent_78%)]" />
+        <div className="redant-orb pointer-events-none absolute -right-20 top-28 -z-10 h-80 w-80 rounded-full bg-gradient-to-br from-rose-300/25 to-red-500/10 blur-3xl" style={{ animation: 'redant-drift 11s ease-in-out infinite' }} />
+        <div className="redant-orb pointer-events-none absolute -left-24 top-72 -z-10 h-72 w-72 rounded-full bg-gradient-to-br from-emerald-300/25 to-cyan-300/10 blur-3xl" style={{ animation: 'redant-drift 13s ease-in-out infinite reverse' }} />
+        <div className="pointer-events-none absolute right-8 top-28 -z-10 h-72 w-72 rounded-full border border-red-200/60 dark:border-red-900/30" />
 
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <Link href="/" aria-label="RedANT home" className="inline-flex items-center">
@@ -348,7 +360,7 @@ export default function RootPage() {
 
             <Link
               href="/signup"
-              className="rounded-xl bg-[#16A34A] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-green-600/20 transition hover:bg-[#15803D]"
+              className="rounded-xl bg-[#16A34A] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-green-600/25 transition duration-300 hover:-translate-y-0.5 hover:bg-[#15803D] hover:shadow-xl hover:shadow-green-600/30"
             >
               Get started
             </Link>
@@ -356,8 +368,8 @@ export default function RootPage() {
         </nav>
 
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-6 pb-12 pt-8 lg:grid-cols-[0.94fr_1.06fr] lg:gap-8 lg:px-8 lg:pb-16 lg:pt-10">
-          <div className="text-center lg:text-left">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+          <div className="redant-motion text-center lg:text-left" style={{ animation: 'redant-rise .8s ease-out both' }}>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-100/80 bg-white/75 px-3 py-1.5 text-xs font-semibold text-red-700 shadow-sm shadow-red-100/60 backdrop-blur-md dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
               <Sparkles className="h-3.5 w-3.5" />
               WhatsApp CRM · Made for conversations that convert
             </div>
@@ -396,7 +408,7 @@ export default function RootPage() {
             </div>
           </div>
 
-          <div id="product" className="min-w-0">
+          <div id="product" className="redant-motion min-w-0" style={{ animation: 'redant-rise .9s .12s ease-out both' }}>
             <ProductPreview />
             <p className="mt-4 text-center text-xs text-slate-400">
               Product preview · Illustrative conversations, not customer data
