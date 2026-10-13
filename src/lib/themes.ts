@@ -23,7 +23,7 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME: ThemeId = "rose";
+export const DEFAULT_THEME: ThemeId = "emerald";
 
 export const STORAGE_KEY = "redant.theme";
 
@@ -75,9 +75,9 @@ export const THEMES: ReadonlyArray<ThemeMeta> = [
   },
   {
     id: "emerald",
-    name: "Emerald",
-    tagline: "Growth-coded, nods at messaging without copying WhatsApp green.",
-    swatch: "oklch(0.62 0.16 162)",
+    name: "RedANT Green",
+    tagline: "RedANT primary green — consistent across the public site and workspace.",
+    swatch: "#16A34A",
   },
   {
     id: "cobalt",
