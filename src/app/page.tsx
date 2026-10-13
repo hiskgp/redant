@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { BrandLogo } from '@/components/brand-logo'
 import {
   ArrowRight,
   Bot,
@@ -356,17 +357,8 @@ export default function RootPage() {
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(239,68,68,0.14),transparent_45%)]" />
 
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 font-bold tracking-tight"
-          >
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-red-600 text-white shadow-lg shadow-red-600/20">
-              R
-            </span>
-
-            <span className="text-xl">
-              Red<span className="text-red-600">ANT</span>
-            </span>
+          <Link href="/" aria-label="RedANT home" className="inline-flex items-center">
+            <BrandLogo />
           </Link>
 
           <div className="hidden items-center gap-8 text-sm font-medium text-slate-500 md:flex dark:text-slate-300">

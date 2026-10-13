@@ -23,9 +23,9 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME: ThemeId = "violet";
+export const DEFAULT_THEME: ThemeId = "rose";
 
-export const STORAGE_KEY = "wacrm.theme";
+export const STORAGE_KEY = "redant.theme";
 
 /**
  * MODE — the light/dark dimension, orthogonal to the accent theme.
@@ -93,8 +93,8 @@ export const THEMES: ReadonlyArray<ThemeMeta> = [
   },
   {
     id: "rose",
-    name: "Rose",
-    tagline: "Bold and modern — D2C, creator-economy, lifestyle.",
+    name: "RedANT Red",
+    tagline: "RedANT brand red — consistent with the public website.",
     swatch: "oklch(0.645 0.22 16)",
   },
 ];
