@@ -261,7 +261,15 @@ export default function RootPage() {
         @keyframes redant-glow { 0%, 100% { opacity: .48; } 50% { opacity: .9; } }
         @keyframes redant-shimmer { 0% { transform: translateX(-150%) rotate(18deg); } 100% { transform: translateX(250%) rotate(18deg); } }
         @keyframes redant-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        @media (prefers-reduced-motion: reduce) { .redant-motion, .redant-device, .redant-orb, .redant-shimmer { animation: none !important; transition: none !important; } }
+        @keyframes redant-reveal { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes redant-sheen { 0% { transform: translateX(-140%); } 100% { transform: translateX(240%); } }
+        @keyframes redant-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,.18); } 50% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } }
+        .redant-reveal { animation: redant-reveal .75s cubic-bezier(.2,.7,.2,1) both; }
+        .redant-card { position: relative; isolation: isolate; }
+        .redant-card::after { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: linear-gradient(115deg,transparent 20%,rgba(255,255,255,.45) 48%,transparent 68%); transform: translateX(-140%); opacity: 0; pointer-events: none; }
+        .redant-card:hover::after { opacity: 1; animation: redant-sheen .8s ease-out; }
+        .redant-pulse { animation: redant-pulse 2.8s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) { .redant-motion, .redant-device, .redant-orb, .redant-shimmer, .redant-reveal, .redant-pulse { animation: none !important; transition: none !important; } .redant-card::after { display: none; } }
       `}</style>
       <script
         type="application/ld+json"
@@ -418,7 +426,7 @@ export default function RootPage() {
       </section>
 
       {/* Feature strip */}
-      <section className="border-y border-slate-100 bg-slate-50/70 dark:border-slate-900 dark:bg-slate-900/30">
+      <section className="redant-reveal border-y border-slate-100 bg-slate-50/70 dark:border-slate-900 dark:bg-slate-900/30">
         <div className="mx-auto grid max-w-7xl gap-4 px-6 py-8 sm:grid-cols-5 lg:px-8">
           {['WhatsApp CRM', 'AI Replies', 'Automation', 'Broadcasts', 'Team Inbox'].map(
             (item) => (
@@ -435,7 +443,7 @@ export default function RootPage() {
       </section>
 
       {/* WhatsApp to online store */}
-      <section id="shopping-journey" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+      <section id="shopping-journey" className="redant-reveal mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-emerald-600">
             Conversations that move commerce forward
@@ -453,7 +461,7 @@ export default function RootPage() {
             { number: '02', title: 'Guide product discovery', description: 'Give helpful answers and guide shoppers to relevant products in your existing catalogue or store.' },
             { number: '03', title: 'Continue to checkout', description: 'Direct customers to your online store and keep follow-ups connected to the conversation.' },
           ].map((step) => (
-            <div key={step.number} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+            <div key={step.number} className="redant-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-950/5 dark:border-slate-800 dark:bg-slate-900">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100 text-sm font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">{step.number}</span>
               <h3 className="mt-5 text-lg font-bold">{step.title}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{step.description}</p>
@@ -468,7 +476,7 @@ export default function RootPage() {
       {/* Features */}
       <section
         id="features"
-        className="mx-auto max-w-7xl px-6 py-24 lg:px-8"
+        className="redant-reveal mx-auto max-w-7xl px-6 py-24 lg:px-8"
       >
         <div className="max-w-2xl">
           <p className="text-sm font-bold uppercase tracking-widest text-red-600">
@@ -493,7 +501,7 @@ export default function RootPage() {
             return (
               <div
                 key={feature.title}
-                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1.5 hover:border-red-200 hover:shadow-2xl hover:shadow-red-950/5 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-red-900 dark:hover:shadow-black/20"
+                className="redant-card group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1.5 hover:border-red-200 hover:shadow-2xl hover:shadow-red-950/5 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-red-900 dark:hover:shadow-black/20"
               >
                 <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-red-50 to-rose-100 text-red-600 transition duration-300 group-hover:scale-110 dark:from-red-950/50 dark:to-rose-950/30 dark:text-red-300">
                   <Icon className="h-5 w-5" />
@@ -513,7 +521,7 @@ export default function RootPage() {
       {/* How it works */}
       <section
         id="how-it-works"
-        className="bg-slate-950 py-24 text-white"
+        className="redant-reveal relative overflow-hidden bg-slate-950 py-24 text-white"
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-2xl">
@@ -530,7 +538,7 @@ export default function RootPage() {
             {workflowSteps.map((step) => (
               <div
                 key={step.number}
-                className="group rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 transition hover:-translate-y-1 hover:border-red-400/40 hover:bg-white/[0.08]"
+                className="redant-card group rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 transition duration-300 hover:-translate-y-1 hover:border-red-400/40 hover:bg-white/[0.08]"
               >
                 <span className="grid h-10 w-10 place-items-center rounded-xl border border-red-400/30 bg-red-500/10 text-sm font-bold text-red-300">
                   {step.number}
@@ -550,7 +558,7 @@ export default function RootPage() {
       </section>
 
       {/* Businesses */}
-      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+      <section className="redant-reveal mx-auto max-w-7xl px-6 py-24 lg:px-8">
         <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-rose-50 via-white to-emerald-50 p-8 dark:border-slate-800 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-950/20 sm:p-12">
           <div className="pointer-events-none absolute -right-12 -top-16 h-56 w-56 rounded-full bg-red-200/40 blur-3xl dark:bg-red-900/20" />
           <div className="max-w-2xl">
@@ -567,7 +575,7 @@ export default function RootPage() {
             {businesses.map((business) => (
               <span
                 key={business}
-                className="rounded-xl border border-white bg-white/85 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-red-200 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-200"
+                className="redant-card rounded-xl border border-white bg-white/85 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-red-200 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-200"
               >
                 {business}
               </span>
@@ -579,7 +587,7 @@ export default function RootPage() {
       {/* Pricing */}
       <section
         id="pricing"
-        className="border-y border-slate-100 bg-slate-50/60 py-24 dark:border-slate-900 dark:bg-slate-900/20"
+        className="redant-reveal border-y border-slate-100 bg-slate-50/60 py-24 dark:border-slate-900 dark:bg-slate-900/20"
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
@@ -664,7 +672,7 @@ export default function RootPage() {
       {/* FAQ */}
       <section
         id="faq"
-        className="mx-auto max-w-4xl px-6 py-24 lg:px-8"
+        className="redant-reveal mx-auto max-w-4xl px-6 py-24 lg:px-8"
       >
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-red-600">
@@ -699,7 +707,7 @@ export default function RootPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 pb-24 lg:px-8">
+      <section className="redant-reveal px-6 pb-24 lg:px-8">
         <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-700 via-green-600 to-teal-600 px-6 py-14 text-center text-white shadow-2xl shadow-green-600/25 sm:px-12">
           <div className="pointer-events-none absolute -right-10 -top-20 h-64 w-64 rounded-full border border-white/15" />
           <div className="pointer-events-none absolute -bottom-36 -left-12 h-72 w-72 rounded-full border border-white/15" />
@@ -713,7 +721,7 @@ export default function RootPage() {
 
           <Link
             href="/signup"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-green-700 transition hover:bg-green-50"
+            className="redant-pulse mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 font-semibold text-green-700 transition duration-300 hover:-translate-y-0.5 hover:bg-green-50"
           >
             Start with RedANT
             <ArrowRight className="h-4 w-4" />
