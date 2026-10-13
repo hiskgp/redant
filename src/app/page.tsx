@@ -256,7 +256,7 @@ function ProductPreview() {
               </p>
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-[9px] text-slate-400">Review before sending</span>
-                <span <button type="button" onClick={() => setReplyUsed(true)} className="rounded-lg bg-red-600 px-3 py-1.5 text-[10px] font-semibold text-white transition hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">{replyUsed ? "Reply added ✓" : "Use reply"}</button>
+                <button type="button" onClick={() => setReplyUsed(true)} className="rounded-lg bg-red-600 px-3 py-1.5 text-[10px] font-semibold text-white transition hover:bg-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">{replyUsed ? "Reply added ✓" : "Use reply"}</button>
               </div>
             </div>
           </div>
