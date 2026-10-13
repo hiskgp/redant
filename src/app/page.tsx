@@ -282,7 +282,7 @@ function ProductPreview() {
         </div>
       </div>
       {/* Realistic secondary phone: titanium-style frame, side buttons, island and clipped screen. */}
-      <div className="relative hidden h-[22rem] w-[10.75rem] shrink-0 -rotate-1 rounded-[2.1rem] border-[5px] border-slate-700 bg-gradient-to-br from-slate-500 via-slate-900 to-slate-600 p-[5px] shadow-[0_28px_60px_-20px_rgba(15,23,42,0.55)] lg:block">
+      <div className="redant-device redant-device-site relative hidden h-[22rem] w-[10.75rem] shrink-0 -rotate-1 rounded-[2.1rem] border-[5px] border-slate-700 bg-gradient-to-br from-slate-500 via-slate-900 to-slate-600 p-[5px] shadow-[0_28px_60px_-20px_rgba(15,23,42,0.55)] lg:block">
         <span className="absolute -left-[7px] top-20 h-8 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
         <span className="absolute -left-[7px] top-32 h-12 w-[3px] rounded-l bg-slate-500" aria-hidden="true" />
         <span className="absolute -right-[7px] top-28 h-14 w-[3px] rounded-r bg-slate-500" aria-hidden="true" />
@@ -800,9 +800,9 @@ export default function RootPage() {
           <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} RedANT. All rights reserved.</p>
             <div className="flex flex-wrap gap-x-5 gap-y-2">
-              <Link href="/privacy-policy" className="transition hover:text-white">Privacy Policy</Link>
-              <Link href="/terms" className="transition hover:text-white">Terms</Link>
-              <Link href="/support" className="transition hover:text-white">Support</Link>
+              <a href="#faq" className="transition hover:text-white">Help & FAQ</a>
+              <a href="#pricing" className="transition hover:text-white">Pricing</a>
+              <Link href="/signup" className="transition hover:text-white">Create account</Link>
             </div>
           </div>
         </div>
