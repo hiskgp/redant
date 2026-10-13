@@ -12,8 +12,8 @@ type LogLevel = 'info' | 'warn' | 'error'
 
 function safeLogText(value: string) {
   return value
-    .replace(/(access_token|client_secret|app_secret|authorization|code)=([^&\\s]+)/gi, '$1=[REDACTED]')
-    .replace(/Bearer\\s+[^\\s]+/gi, 'Bearer [REDACTED]')
+    .replace(/(access_token|client_secret|app_secret|authorization|code)=([^&\s]+)/gi, '$1=[REDACTED]')
+    .replace(/Bearer\s+[^\s]+/gi, 'Bearer [REDACTED]')
     .slice(0, 1200)
 }
 
@@ -105,8 +105,8 @@ export async function POST(request: Request) {
     const wabaId = typeof body.waba_id === 'string' ? body.waba_id.trim() : ''
     let phoneNumberId = typeof body.phone_number_id === 'string' ? body.phone_number_id.trim() : ''
 
-    if ((!code && !accessTokenFromClient) || !/^\\d+$/.test(wabaId)) {
-      signupLog('warn', 'signup.invalid_meta_response', requestId, { has_code: Boolean(code), has_client_token: Boolean(accessTokenFromClient), has_waba_id: /^\\d+$/.test(wabaId), http_status: 400 })
+    if ((!code && !accessTokenFromClient) || !/^\d+$/.test(wabaId)) {
+      signupLog('warn', 'signup.invalid_meta_response', requestId, { has_code: Boolean(code), has_client_token: Boolean(accessTokenFromClient), has_waba_id: /^\d+$/.test(wabaId), http_status: 400 })
       return NextResponse.json({ error: 'Meta did not return a valid signup credential or WABA ID.', request_id: requestId }, { status: 400 })
     }
 
@@ -151,7 +151,7 @@ export async function POST(request: Request) {
       }
       phoneNumberId = numbers[0].id
     }
-    if (!/^\\d+$/.test(phoneNumberId)) {
+    if (!/^\d+$/.test(phoneNumberId)) {
       signupLog('warn', 'signup.invalid_phone_number_id', requestId, { http_status: 400 })
       return NextResponse.json({ error: 'Meta returned an invalid Phone Number ID.', request_id: requestId }, { status: 400 })
     }
