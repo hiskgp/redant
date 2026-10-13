@@ -191,20 +191,7 @@ function ProductPreview() {
   return (
     <div className="relative mx-auto flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5">
       <div className="absolute -inset-12 rounded-full bg-gradient-to-br from-red-400/25 via-rose-500/10 to-emerald-400/25 blur-3xl" />
-      <div className="absolute -left-2 top-16 z-20 hidden rounded-2xl border border-white/70 bg-white/90 p-3.5 shadow-xl shadow-slate-900/10 backdrop-blur md:block lg:-left-12">
-        <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-100 text-emerald-700"><MessageCircle className="h-4 w-4" /></span>
-          <div><p className="text-xs font-bold text-slate-900">Customer message</p><p className="mt-0.5 text-[10px] text-slate-500">Ready for your team</p></div>
-        </div>
-      </div>
-      <div className="absolute -right-1 bottom-28 z-20 hidden rounded-2xl border border-white/70 bg-white/95 p-3.5 shadow-xl shadow-slate-900/10 backdrop-blur md:block lg:-right-10">
-        <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet-100 text-violet-700"><Sparkles className="h-4 w-4" /></span>
-          <div><p className="text-xs font-bold text-slate-900">AI-assisted replies</p><p className="mt-0.5 text-[10px] text-slate-500">You review before sending</p></div>
-        </div>
-      </div>
-
-      <div className="relative mx-auto w-full max-w-[17rem] shrink rounded-[2.75rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl shadow-emerald-950/20 dark:border-slate-700">
+      <div className="relative mx-auto w-full max-w-[16rem] shrink select-none rounded-[2.75rem] border-[8px] border-slate-900 bg-slate-900 p-1.5 shadow-2xl shadow-emerald-950/20 dark:border-slate-700">
         <div className="overflow-hidden rounded-[2.1rem] bg-white text-slate-950">
           <div className="flex items-center justify-between bg-white px-5 pb-3 pt-4 text-[10px] font-semibold">
             <span>9:41</span>
@@ -221,8 +208,8 @@ function ProductPreview() {
             <span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">Preview</span>
           </div>
 
-          <div className="bg-slate-50 px-4 pb-5 pt-4">
-            <div className="mb-4 flex items-center justify-between">
+          <div className="bg-slate-50 px-3 pb-3 pt-3">
+            <div className="mb-3 flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-red-600">Shared inbox</p>
                 <h3 className="mt-1 text-lg font-black">Conversations</h3>
@@ -230,15 +217,15 @@ function ProductPreview() {
               <span className="rounded-xl bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm">3 chats</span>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {conversations.map((conversation, index) => (
                 <div
                   key={conversation.name}
-                  className={`flex items-start gap-3 rounded-2xl border bg-white p-3 shadow-sm ${
+                  className={`flex items-start gap-3 rounded-xl border bg-white p-2.5 shadow-sm ${
                     index === 0 ? 'border-red-200 ring-1 ring-red-100' : 'border-slate-100'
                   }`}
                 >
-                  <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-full text-xs font-bold ${
+                  <div className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-bold ${
                     index === 0 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
                   }`}>
                     {conversation.name.split(' ').map((part) => part[0]).join('').slice(0, 2)}
@@ -255,12 +242,12 @@ function ProductPreview() {
               ))}
             </div>
 
-            <div className="mt-4 rounded-2xl border border-red-100 bg-white p-3.5 shadow-sm">
+            <div className="mt-3 rounded-xl border border-red-100 bg-white p-3 shadow-sm">
               <div className="flex items-center gap-2 text-xs font-bold text-red-700">
                 <Sparkles className="h-4 w-4" />
                 AI reply suggestion
               </div>
-              <p className="mt-2 text-[11px] leading-5 text-slate-600">
+              <p className="mt-1.5 text-[10px] leading-4 text-slate-600">
                 “Yes, the red dress is available! Would you like to see the size options?”
               </p>
               <div className="mt-3 flex items-center justify-between">
@@ -270,7 +257,7 @@ function ProductPreview() {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 border-t border-slate-100 bg-white px-2 py-3 text-center">
+          <div className="grid grid-cols-4 border-t border-slate-100 bg-white px-2 py-2 text-center">
             {[
               { icon: Inbox, label: 'Inbox' },
               { icon: MessageCircle, label: 'Contacts' },
@@ -427,23 +414,23 @@ export default function RootPage() {
           </div>
         </nav>
 
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 pb-16 pt-12 lg:grid-cols-[0.88fr_1.12fr] lg:px-8 lg:pb-24 lg:pt-20">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-6 pb-12 pt-8 lg:grid-cols-[0.94fr_1.06fr] lg:gap-8 lg:px-8 lg:pb-16 lg:pt-10">
           <div className="text-center lg:text-left">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
               <Sparkles className="h-3.5 w-3.5" />
               WhatsApp CRM · Made for conversations that convert
             </div>
 
-            <h1 className="text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-[4.35rem]">
+            <h1 className="text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-[3.75rem]">
               From WhatsApp chat to{' '}
               <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-500 bg-clip-text text-transparent">online store.</span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8 lg:mx-0 dark:text-slate-300">
+            <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8 lg:mx-0 dark:text-slate-300">
               Turn customer conversations into shopping journeys. Answer product questions, organize leads, and connect WhatsApp conversations with your existing online store workflows—all from one workspace.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
               <Link
                 href="/signup"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#16A34A] px-6 py-3.5 font-semibold text-white shadow-xl shadow-green-600/25 transition hover:-translate-y-0.5 hover:bg-[#15803D] hover:shadow-2xl hover:shadow-green-600/30"
@@ -461,7 +448,7 @@ export default function RootPage() {
               </a>
             </div>
 
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-slate-500 lg:justify-start dark:text-slate-400">
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-slate-500 lg:justify-start dark:text-slate-400">
               <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Keep chats organized</span>
               <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Follow up with leads</span>
               <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-emerald-600" /> Review AI reply drafts</span>
