@@ -131,36 +131,70 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       }
     }
 
+    let disposed = false
+    let sdkLoadTimeout: ReturnType<typeof setTimeout> | undefined
+    const initializeSdk = () => {
+      if (disposed || !window.FB) return
+      try {
+        // Initialize even when another part of the page loaded the SDK first.
+        // Otherwise the button can appear ready while FB.login has no RedANT app config.
+        window.FB.init({ appId, autoLogAppEvents: true, cookie: true, xfbml: true, version: 'v25.0', fedCM: false })
+        setSdkReady(true)
+        setError('')
+      } catch {
+        setSdkReady(false)
+        setError('Meta SDK loaded but could not initialize. Refresh the page and try again.')
+      }
+    }
+
     window.addEventListener('message', handleMessage)
+    window.fbAsyncInit = initializeSdk
 
     if (window.FB) {
-      setSdkReady(true)
-      return () => window.removeEventListener('message', handleMessage)
-    }
+      initializeSdk()
+    } else {
+      let script = document.getElementById('facebook-jssdk') as HTMLScriptElement | null
+      if (!script) {
+        script = document.createElement('script')
+        script.id = 'facebook-jssdk'
+        script.async = true
+        script.defer = true
+        script.crossOrigin = 'anonymous'
+        script.src = 'https://connect.facebook.net/en_US/sdk.js'
+        script.onerror = () => {
+          if (!disposed) {
+            setSdkReady(false)
+            setError('Meta SDK could not load. Check browser tracking protection, ad blockers, or the site Content Security Policy, then refresh.')
+          }
+        }
+        document.body.appendChild(script)
+      }
 
-    window.fbAsyncInit = () => {
-      window.FB?.init({ appId, autoLogAppEvents: true, cookie: true, xfbml: true, version: 'v25.0', fedCM: false })
-      setSdkReady(true)
-    }
-
-    if (!document.getElementById('facebook-jssdk')) {
-      const script = document.createElement('script')
-      script.id = 'facebook-jssdk'
-      script.async = true
-      script.defer = true
-      script.crossOrigin = 'anonymous'
-      script.src = 'https://connect.facebook.net/en_US/sdk.js'
-      document.body.appendChild(script)
+      // If the script is already present but its callback was missed, wait briefly
+      // for it to finish rather than leaving an apparently dead Connect button.
+      sdkLoadTimeout = setTimeout(() => {
+        if (!disposed && !window.FB) {
+          setSdkReady(false)
+          setError('Meta SDK did not initialize. Check browser console/CSP settings and refresh the page.')
+        } else if (!disposed) {
+          initializeSdk()
+        }
+      }, 10000)
     }
 
     return () => {
+      disposed = true
+      if (sdkLoadTimeout) clearTimeout(sdkLoadTimeout)
       window.removeEventListener('message', handleMessage)
-      if (window.fbAsyncInit) delete window.fbAsyncInit
+      if (window.fbAsyncInit === initializeSdk) delete window.fbAsyncInit
     }
   }, [appId, configId, completeSignup])
 
   const launch = () => {
-    if (!window.FB || !sdkReady || !configId) return
+    if (!window.FB || !sdkReady || !configId) {
+      setError('Meta login is not ready yet. Wait for the SDK status below, then refresh if it does not become ready.')
+      return
+    }
     codeRef.current = null
     accessTokenRef.current = null
     dataRef.current = null
@@ -168,35 +202,40 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     setError('')
     setMessage('Opening Meta Embedded Signup…')
 
-    window.FB.login(
-      async (response) => {
-        const code = response.authResponse?.code
-        const accessToken = response.authResponse?.accessToken
-        if (!code && !accessToken) {
-          setMessage('')
-          const requestId = await reportSignupDiagnostic('login_callback_missing_credentials', {
-            login_status: response.status ?? 'unknown',
-            has_auth_response: Boolean(response.authResponse),
-          })
-          setError('Meta login did not return an authorization code. Please retry.' + (requestId ? ' Reference: ' + requestId : ''))
-          return
-        }
-        codeRef.current = code ?? null
-        accessTokenRef.current = accessToken ?? null
-        if (dataRef.current) void completeSignup()
-      },
-      {
-        config_id: configId,
-        response_type: 'code',
-        override_default_response_type: true,
-        extras: {
-          // v4 uses the saved Login for Business configuration for products and permissions.
-          // Keep featureType so eligible WhatsApp Business App users can choose Coexistence.
-          setup: {},
-          featureType: 'whatsapp_business_app_onboarding',
+    try {
+      window.FB.login(
+        async (response) => {
+          const code = response.authResponse?.code
+          const accessToken = response.authResponse?.accessToken
+          if (!code && !accessToken) {
+            setMessage('')
+            const requestId = await reportSignupDiagnostic('login_callback_missing_credentials', {
+              login_status: response.status ?? 'unknown',
+              has_auth_response: Boolean(response.authResponse),
+            })
+            setError('Meta login did not return an authorization code. Please retry.' + (requestId ? ' Reference: ' + requestId : ''))
+            return
+          }
+          codeRef.current = code ?? null
+          accessTokenRef.current = accessToken ?? null
+          if (dataRef.current) void completeSignup()
         },
-      },
-    )
+        {
+          config_id: configId,
+          response_type: 'code',
+          override_default_response_type: true,
+          extras: {
+            // v4 uses the saved Login for Business configuration for products and permissions.
+            // Keep featureType so eligible WhatsApp Business App users can choose Coexistence.
+            setup: {},
+            featureType: 'whatsapp_business_app_onboarding',
+          },
+        },
+      )
+    } catch {
+      setMessage('')
+      setError('Meta could not open the signup window. Allow pop-ups for redant.in, disable blocking extensions for this site, and retry.')
+    }
   }
 
   return (
