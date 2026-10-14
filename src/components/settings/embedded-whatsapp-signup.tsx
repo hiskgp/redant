@@ -46,6 +46,9 @@ async function reportSignupDiagnostic(
 
 type Props = { disabled?: boolean; onConnected?: () => void }
 
+// Prevent duplicate FB.init calls when settings tabs remount during client navigation.
+let initializedFacebookAppId: string | null = null
+
 export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
   const [sdkReady, setSdkReady] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -136,9 +139,12 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     const initializeSdk = () => {
       if (disposed || !window.FB) return
       try {
-        // Initialize even when another part of the page loaded the SDK first.
-        // Otherwise the button can appear ready while FB.login has no RedANT app config.
-        window.FB.init({ appId, autoLogAppEvents: true, cookie: true, xfbml: true, version: 'v25.0', fedCM: false })
+        if (initializedFacebookAppId !== appId) {
+          // Initialize even when another part of the page loaded the SDK first.
+          // Otherwise the button can appear ready while FB.login has no RedANT app config.
+          window.FB.init({ appId, autoLogAppEvents: true, cookie: true, xfbml: true, version: 'v25.0', fedCM: false })
+          initializedFacebookAppId = appId
+        }
         setSdkReady(true)
         setError('')
       } catch {
