@@ -1,5 +1,5 @@
 import Link from "next/link";
-export const metadata = { title: "Privacy Policy", description: "Learn how RedANT handles account and business information." };
+export const metadata = { title: "Privacy Policy", description: "Learn how RedANT handles account and business information.", alternates: { canonical: "/privacy-policy" } };
 const sections = [
 ["Information you provide","RedANT may process account details, business profile information, contact records, messages, configuration data, and support requests you submit while using the service."],
 ["Connected services and messaging data","If you connect WhatsApp or another supported service, RedANT processes information needed to provide the features you enable. The connected platform's own terms and privacy policy also apply. Only upload contact information and send messages when you have the necessary rights, permissions, and lawful basis."],
