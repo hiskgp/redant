@@ -3,13 +3,16 @@ import type { MetadataRoute } from "next";
 const SITE_URL = "https://redant.in";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // Only include the verified public homepage. Add other URLs here after
-  // confirming that each is a canonical, indexable public landing page.
-  return [
-    {
-      url: SITE_URL,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
+  const publicPages = [
+    { path: "", changeFrequency: "weekly" as const, priority: 1 },
+    { path: "/support", changeFrequency: "monthly" as const, priority: 0.6 },
+    { path: "/terms", changeFrequency: "yearly" as const, priority: 0.3 },
+    { path: "/privacy-policy", changeFrequency: "yearly" as const, priority: 0.3 },
   ];
+
+  return publicPages.map(({ path, changeFrequency, priority }) => ({
+    url: `${SITE_URL}${path}`,
+    changeFrequency,
+    priority,
+  }));
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-export const metadata = { title: "Terms of Service", description: "Terms for using the RedANT website and service." };
+export const metadata = { title: "Terms of Service", description: "Terms for using the RedANT website and service.", alternates: { canonical: "/terms" } };
 const sections = [
 ["Using RedANT","RedANT provides software tools for managing customer conversations and configured business workflows. Features, integrations, limits, and availability may vary by plan and may change."],
 ["Your account","Provide accurate account information, protect your credentials, and ensure account users are authorized. You are responsible for activity through your account and should promptly report suspected unauthorized access."],
