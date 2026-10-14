@@ -5,6 +5,7 @@ import {
   getSubscribedApps,
   verifyPhoneNumber,
 } from '@/lib/whatsapp/meta-api'
+import { appSubscriptionState } from '@/lib/whatsapp/waba-pairing'
 
 /**
  * GET /api/whatsapp/config/verify-registration
@@ -57,7 +58,7 @@ export async function GET() {
 
   const { data: config } = await supabase
     .from('whatsapp_config')
-    .select('*')
+    .select('phone_number_id, waba_id, access_token, registered_at, last_registration_error, subscribed_apps_at')
     .eq('account_id', accountId)
     .maybeSingle()
 
@@ -89,12 +90,14 @@ export async function GET() {
     token_decryptable: boolean
     phone_metadata_ok: boolean
     waba_subscribed_to_app: boolean | null
+    waba_app_id_match: boolean | null
     locally_marked_registered: boolean
   } = {
     config_exists: true,
     token_decryptable: true,
     phone_metadata_ok: false,
     waba_subscribed_to_app: null,
+    waba_app_id_match: null,
     locally_marked_registered: config.registered_at != null,
   }
   const errors: string[] = []
@@ -119,12 +122,23 @@ export async function GET() {
         wabaId: config.waba_id,
         accessToken,
       })
-      // Meta returns the apps subscribed to this WABA. If the list
-      // is non-empty, OUR app is in there (the access_token we used
-      // belongs to our app — Meta wouldn't return data for an app
-      // the token can't see). Treat any entry as success.
-      checks.waba_subscribed_to_app = subs.length > 0
-      if (!checks.waba_subscribed_to_app) {
+      // A WABA can have another app subscribed while RedANT is not.
+      // Check the configured RedANT App ID explicitly instead of treating
+      // any subscribed app as proof that this integration is healthy.
+      const state = appSubscriptionState(subs, process.env.META_APP_ID)
+      checks.waba_subscribed_to_app = state.appIdMatch === null
+        ? null
+        : state.subscribed && state.appIdMatch
+      checks.waba_app_id_match = state.appIdMatch
+      if (state.appIdMatch === false) {
+        errors.push(
+          'RedANT is not listed among this WABA’s subscribed apps. Reconnect or subscribe the RedANT app in Meta.',
+        )
+      } else if (state.appIdMatch === null) {
+        errors.push(
+          'META_APP_ID is not configured, so RedANT cannot confirm that its app is subscribed to this WABA.',
+        )
+      } else if (!state.subscribed) {
         errors.push(
           'WABA has no subscribed apps. Re-save the configuration to subscribe.',
         )
@@ -142,7 +156,8 @@ export async function GET() {
 
   const live =
     checks.phone_metadata_ok &&
-    (checks.waba_subscribed_to_app ?? false) &&
+    checks.waba_subscribed_to_app === true &&
+    checks.waba_app_id_match === true &&
     checks.locally_marked_registered
 
   return NextResponse.json({
