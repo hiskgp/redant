@@ -90,6 +90,7 @@ export async function GET() {
     token_decryptable: boolean
     phone_metadata_ok: boolean
     waba_subscribed_to_app: boolean | null
+    waba_app_id_match: boolean | null
     locally_marked_registered: boolean
   } = {
     config_exists: true,
