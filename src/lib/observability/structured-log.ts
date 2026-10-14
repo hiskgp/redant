@@ -6,14 +6,14 @@ export type StructuredLogFields = Record<
 >
 
 const SENSITIVE_FIELD = /token|secret|authorization|auth.?code|(^|_)code($|_)|state|cookie|password|phone|email|payload|body|credential|signature/i
-const SENSITIVE_VALUE = /(access_token|refresh_token|client_secret|app_secret|authorization|auth_code|code|state|verify_token|phone_number|email)(["'\\s:=]+)([^&\\s,"'}]+)/gi
+const SENSITIVE_VALUE = /(access_token|refresh_token|client_secret|app_secret|authorization|auth_code|code|state|verify_token|phone_number|email)(["'\s:=]+)([^&\s,"'}]+)/gi
 
 /** Redact common credentials and personal identifiers before a value reaches logs. */
 export function sanitizeLogText(value: string): string {
   return value
-    .replace(/Bearer\\s+[^\\s,;]+/gi, 'Bearer [REDACTED]')
+    .replace(/Bearer\s+[^\s,;]+/gi, 'Bearer [REDACTED]')
     .replace(SENSITIVE_VALUE, '$1$2[REDACTED]')
-    .replace(/([?&](?:access_token|refresh_token|client_secret|app_secret|code|state|verify_token)=)[^&#\\s]*/gi, '$1[REDACTED]')
+    .replace(/([?&](?:access_token|refresh_token|client_secret|app_secret|code|state|verify_token)=)[^&#\s]*/gi, '$1[REDACTED]')
     .slice(0, 800)
 }
 
