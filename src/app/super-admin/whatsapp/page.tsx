@@ -52,6 +52,7 @@ export default async function SuperAdminWhatsAppPage() {
   return (
     <main className="mx-auto w-full max-w-7xl space-y-6">
       <header className="space-y-3">
+        <Link href="/super-admin/audit" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">Audit trail</Link>
         <Link href="/super-admin" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to overview
         </Link>
