@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { ForbiddenError, requireRole, UnauthorizedError } from '@/lib/auth/account'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { encrypt } from '@/lib/whatsapp/encryption'
 import { listWabaPhoneNumbers, subscribeWabaToApp, verifyPhoneNumber } from '@/lib/whatsapp/meta-api'
@@ -72,11 +72,6 @@ function admin() {
   )
 }
 
-async function resolveAccountId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
-  const { data } = await supabase.from('profiles').select('account_id').eq('user_id', userId).maybeSingle()
-  return data?.account_id ?? null
-}
-
 export async function POST(request: Request) {
   const suppliedRequestId = request.headers.get('x-request-id')
   const requestId = suppliedRequestId && /^[a-zA-Z0-9._-]{1,100}$/.test(suppliedRequestId)
@@ -86,18 +81,9 @@ export async function POST(request: Request) {
   signupLog('info', 'signup.request_received', requestId)
 
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      signupLog('warn', 'signup.unauthorized', requestId, { http_status: 401 })
-      return NextResponse.json({ error: 'Unauthorized', request_id: requestId }, { status: 401 })
-    }
-
-    const accountId = await resolveAccountId(supabase, user.id)
-    if (!accountId) {
-      signupLog('warn', 'signup.account_not_linked', requestId, { http_status: 403 })
-      return NextResponse.json({ error: 'Your profile is not linked to an account.', request_id: requestId }, { status: 403 })
-    }
+    // The connected WhatsApp number is shared by the whole account.
+    // Only account admins may connect or replace that integration.
+    const { supabase, accountId, userId } = await requireRole('admin')
 
     const body = await request.json()
 
@@ -239,7 +225,7 @@ export async function POST(request: Request) {
 
     const row = {
       account_id: accountId,
-      user_id: user.id,
+      user_id: userId,
       phone_number_id: phoneNumberId,
       waba_id: wabaId,
       access_token: encryptedAccessToken,
@@ -272,6 +258,12 @@ export async function POST(request: Request) {
       webhook_verify_token_configured: Boolean(verifyToken),
     })
   } catch (error) {
+    if (error instanceof UnauthorizedError || error instanceof ForbiddenError) {
+      signupLog('warn', error instanceof UnauthorizedError ? 'signup.unauthorized' : 'signup.forbidden', requestId, {
+        http_status: error.status,
+      })
+      return NextResponse.json({ error: error.message, request_id: requestId }, { status: error.status })
+    }
     signupLog('error', 'signup.unexpected_failure', requestId, {}, error)
     return NextResponse.json({ error: 'Failed to complete WhatsApp Embedded Signup.', request_id: requestId }, { status: 500 })
   }
