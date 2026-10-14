@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import {
   Activity,
@@ -150,6 +151,11 @@ export default async function SuperAdminPage() {
           <p className="mt-1 font-medium text-foreground">{email ?? 'Verified platform admin'}</p>
         </div>
       </header>
+
+      <nav aria-label="Super Admin modules" className="flex flex-wrap gap-3">
+        <Link href="/super-admin/customers" className="rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">Customer management</Link>
+        <Link href="/super-admin/whatsapp" className="rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">WhatsApp diagnostics</Link>
+      </nav>
 
       {queryErrors.length > 0 && (
         <div
