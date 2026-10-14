@@ -231,6 +231,7 @@ export async function POST(request: Request) {
       access_token: encryptedAccessToken,
       verify_token: verifyToken ? encrypt(verifyToken) : null,
       status: 'connected',
+      connection_method: 'embedded_signup',
       connected_at: now,
       subscribed_apps_at: now,
       last_registration_error: null,
