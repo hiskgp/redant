@@ -25,6 +25,25 @@ type SignupData = {
   businessId?: string
 }
 
+type SignupDiagnosticEvent = 'login_callback_missing_credentials' | 'session_cancelled' | 'session_error'
+
+async function reportSignupDiagnostic(
+  event: SignupDiagnosticEvent,
+  diagnostic: { login_status?: string; has_auth_response?: boolean; session_event?: string } = {},
+): Promise<string | null> {
+  try {
+    const response = await fetch('/api/whatsapp/embedded-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ diagnostic_event: event, diagnostic }),
+    })
+    const payload = await response.json().catch(() => ({}))
+    return typeof payload.request_id === 'string' ? payload.request_id : null
+  } catch {
+    return null
+  }
+}
+
 type Props = { disabled?: boolean; onConnected?: () => void }
 
 export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
@@ -93,6 +112,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         if (codeRef.current || accessTokenRef.current) void completeSignup()
         else setMessage('Meta finished setup. Waiting for the authorization response…')
       } else if (data.event === 'CANCEL') {
+        void reportSignupDiagnostic('session_cancelled', { session_event: 'CANCEL' })
         submittedRef.current = false
         codeRef.current = null
         accessTokenRef.current = null
@@ -101,6 +121,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         setMessage('')
         setError('Embedded Signup was cancelled at ' + (data.data?.current_step ?? 'the current step') + '.')
       } else if (data.event === 'ERROR') {
+        void reportSignupDiagnostic('session_error', { session_event: 'ERROR' })
         submittedRef.current = false
         codeRef.current = null
         dataRef.current = null
@@ -153,7 +174,11 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         const accessToken = response.authResponse?.accessToken
         if (!code && !accessToken) {
           setMessage('')
-          setError('Meta login completed but returned neither an authorization code nor an access token. Please try again.')
+          const requestId = await reportSignupDiagnostic('login_callback_missing_credentials', {
+            login_status: response.status ?? 'unknown',
+            has_auth_response: Boolean(response.authResponse),
+          })
+          setError('Meta login did not return an authorization code. Please retry.' + (requestId ? ' Reference: ' + requestId : ''))
           return
         }
         codeRef.current = code ?? null
