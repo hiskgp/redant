@@ -94,6 +94,7 @@ export async function POST(request: Request) {
       login_callback_missing_credentials: 'warn',
       session_cancelled: 'info',
       session_error: 'error',
+      login_launch_exception: 'error',
     } as const
     const diagnosticEvent = typeof body.diagnostic_event === 'string' ? body.diagnostic_event : ''
     if (diagnosticEvent) {
