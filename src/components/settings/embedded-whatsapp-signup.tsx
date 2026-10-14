@@ -238,9 +238,19 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
           },
         },
       )
-    } catch {
+    } catch (launchError) {
+      // Keep the browser's actual SDK exception in DevTools and show a useful,
+      // non-secret summary. A generic popup-blocker message hid SDK/config bugs.
+      console.error('[RedANT] Meta FB.login threw before opening signup:', launchError)
       setMessage('')
-      setError('Meta could not open the signup window. Allow pop-ups for redant.in, disable blocking extensions for this site, and retry.')
+      const requestId = await reportSignupDiagnostic('login_launch_exception', {
+        login_status: 'unknown',
+        has_auth_response: false,
+      })
+      const detail = launchError instanceof Error && launchError.message
+        ? launchError.message.slice(0, 180)
+        : 'Unknown JavaScript SDK error'
+      setError('Meta login could not start: ' + detail + (requestId ? ' Reference: ' + requestId : '') + '. Check the browser console for the full exception.')
     }
   }
 
