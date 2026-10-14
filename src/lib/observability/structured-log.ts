@@ -5,6 +5,16 @@ export type StructuredLogFields = Record<
   string | number | boolean | null | undefined
 >
 
+export type StructuredLogRecord = {
+  timestamp: string
+  level: StructuredLogLevel
+  service: string
+  route: string
+  event: string
+  request_id: string
+  [key: string]: string | number | boolean | null
+}
+
 const SENSITIVE_FIELD = /token|secret|authorization|auth.?code|(^|_)code($|_)|state|cookie|password|phone|email|payload|body|credential|signature/i
 const SENSITIVE_VALUE = /(access_token|refresh_token|client_secret|app_secret|authorization|auth_code|code|state|verify_token|phone_number|email)(["'\s:=]+)([^&\s,"'}]+)/gi
 
@@ -24,7 +34,7 @@ export function buildStructuredLogRecord(
   requestId: string,
   fields: StructuredLogFields = {},
   route = '/api/whatsapp/callback',
-) {
+): StructuredLogRecord {
   const safeFields: Record<string, string | number | boolean | null> = {}
   for (const [key, value] of Object.entries(fields)) {
     if (SENSITIVE_FIELD.test(key) || value === undefined) continue
