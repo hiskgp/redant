@@ -165,6 +165,9 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         response_type: 'code',
         override_default_response_type: true,
         extras: {
+          // Embedded Signup v4: the flow version and session event schema are separate settings.
+          version: 4,
+          sessionInfoVersion: 4,
           setup: {},
           featureType: 'whatsapp_business_app_onboarding',
         },
