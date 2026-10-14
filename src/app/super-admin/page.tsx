@@ -155,6 +155,7 @@ export default async function SuperAdminPage() {
       <nav aria-label="Super Admin modules" className="flex flex-wrap gap-3">
         <Link href="/super-admin/customers" className="rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">Customer management</Link>
         <Link href="/super-admin/whatsapp" className="rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">WhatsApp diagnostics</Link>
+        <Link href="/super-admin/audit" className="rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">Audit trail</Link>
       </nav>
 
       {queryErrors.length > 0 && (
