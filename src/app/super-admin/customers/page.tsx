@@ -129,6 +129,7 @@ export default async function SuperAdminCustomersPage({
             <h2 className="font-semibold text-foreground">Customer accounts</h2>
             <p className="mt-1 text-xs text-muted-foreground">{(count ?? 0).toLocaleString()} matching accounts</p>
           </div>
+          <Link href="/super-admin/audit" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">Audit trail</Link>
           <Link href="/super-admin/whatsapp" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
             <Wifi className="h-4 w-4" aria-hidden="true" /> WhatsApp diagnostics
           </Link>
