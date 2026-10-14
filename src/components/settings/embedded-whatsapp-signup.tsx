@@ -25,7 +25,7 @@ type SignupData = {
   businessId?: string
 }
 
-type SignupDiagnosticEvent = 'login_callback_missing_credentials' | 'session_cancelled' | 'session_error'
+type SignupDiagnosticEvent = 'login_callback_missing_credentials' | 'login_launch_exception' | 'session_cancelled' | 'session_error'
 
 async function reportSignupDiagnostic(
   event: SignupDiagnosticEvent,
@@ -196,7 +196,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     }
   }, [appId, configId, completeSignup])
 
-  const launch = () => {
+  const launch = async () => {
     if (!window.FB || !sdkReady || !configId) {
       setError('Meta login is not ready yet. Wait for the SDK status below, then refresh if it does not become ready.')
       return
