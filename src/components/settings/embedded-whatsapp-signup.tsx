@@ -169,7 +169,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     setMessage('Opening Meta Embedded Signup…')
 
     window.FB.login(
-      (response) => {
+      async (response) => {
         const code = response.authResponse?.code
         const accessToken = response.authResponse?.accessToken
         if (!code && !accessToken) {
