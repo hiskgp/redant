@@ -111,7 +111,7 @@ export async function POST(request: Request) {
     } as const
     const diagnosticEvent = typeof body.diagnostic_event === 'string' ? body.diagnostic_event : ''
     if (diagnosticEvent) {
-      if (!(diagnosticEvent in diagnosticEvents)) {
+      if (!Object.hasOwn(diagnosticEvents, diagnosticEvent)) {
         return NextResponse.json({ error: 'Unsupported diagnostic event.', request_id: requestId }, { status: 400 })
       }
       const diagnostic = body.diagnostic && typeof body.diagnostic === 'object' ? body.diagnostic : {}
@@ -123,7 +123,6 @@ export async function POST(request: Request) {
         login_status: loginStatus,
         has_auth_response: hasAuthResponse,
         session_event: sessionEvent,
-        http_status: 200,
       })
       return NextResponse.json({ success: true, request_id: requestId })
     }
