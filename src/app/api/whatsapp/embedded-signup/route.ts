@@ -100,6 +100,34 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+
+    // Client-side Meta popup failures happen before a credential exists, so they
+    // cannot reach the normal token-exchange error path. Record only an allowlisted
+    // event and coarse status flags; never accept or log browser-supplied credentials.
+    const diagnosticEvents = {
+      login_callback_missing_credentials: 'warn',
+      session_cancelled: 'info',
+      session_error: 'error',
+    } as const
+    const diagnosticEvent = typeof body.diagnostic_event === 'string' ? body.diagnostic_event : ''
+    if (diagnosticEvent) {
+      if (!(diagnosticEvent in diagnosticEvents)) {
+        return NextResponse.json({ error: 'Unsupported diagnostic event.', request_id: requestId }, { status: 400 })
+      }
+      const diagnostic = body.diagnostic && typeof body.diagnostic === 'object' ? body.diagnostic : {}
+      const allowedStatuses = ['connected', 'not_authorized', 'unknown', 'other']
+      const loginStatus = allowedStatuses.includes(diagnostic.login_status) ? diagnostic.login_status : 'unknown'
+      const hasAuthResponse = typeof diagnostic.has_auth_response === 'boolean' ? diagnostic.has_auth_response : null
+      const sessionEvent = ['CANCEL', 'ERROR'].includes(diagnostic.session_event) ? diagnostic.session_event : null
+      signupLog(diagnosticEvents[diagnosticEvent as keyof typeof diagnosticEvents], 'client.' + diagnosticEvent, requestId, {
+        login_status: loginStatus,
+        has_auth_response: hasAuthResponse,
+        session_event: sessionEvent,
+        http_status: 200,
+      })
+      return NextResponse.json({ success: true, request_id: requestId })
+    }
+
     const code = typeof body.code === 'string' ? body.code.trim() : ''
     const accessTokenFromClient = typeof body.access_token === 'string' ? body.access_token.trim() : ''
     const wabaId = typeof body.waba_id === 'string' ? body.waba_id.trim() : ''
