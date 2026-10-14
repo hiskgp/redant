@@ -28,9 +28,6 @@ export const metadata: Metadata = {
   },
   description:
     "Manage WhatsApp customer conversations, AI-assisted replies, follow-ups, and automation with RedANT. Built for growing businesses in India and worldwide.",
-  alternates: {
-    canonical: "/",
-  },
   robots: {
     index: true,
     follow: true,
