@@ -1,5 +1,5 @@
 import Link from "next/link";
-export const metadata = { title: "Support", description: "Find help with your RedANT account and setup." };
+export const metadata = { title: "Support", description: "Find help with your RedANT account and setup.", alternates: { canonical: "/support" } };
 const topics = [
 ["Account and access","For login, signup, or access issues, start from your RedANT account page."],
 ["WhatsApp connection","WhatsApp onboarding depends on Meta account eligibility, permissions, and platform approval. Include the exact error message and the step where it appears when seeking help."],
