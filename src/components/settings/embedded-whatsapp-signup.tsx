@@ -25,11 +25,11 @@ type SignupData = {
   businessId?: string
 }
 
-type SignupDiagnosticEvent = 'login_callback_missing_credentials' | 'login_launch_exception' | 'session_cancelled' | 'session_error'
+type SignupDiagnosticEvent = 'login_callback_missing_credentials' | 'login_launch_exception' | 'session_cancelled' | 'session_error' | 'signup_completion_timeout'
 
 async function reportSignupDiagnostic(
   event: SignupDiagnosticEvent,
-  diagnostic: { login_status?: string; has_auth_response?: boolean; session_event?: string } = {},
+  diagnostic: { login_status?: string; has_auth_response?: boolean; session_event?: string; stage?: string; has_code?: boolean; has_waba_id?: boolean } = {},
 ): Promise<string | null> {
   try {
     const response = await fetch('/api/whatsapp/embedded-signup', {
@@ -58,6 +58,44 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
   const accessTokenRef = useRef<string | null>(null)
   const dataRef = useRef<SignupData | null>(null)
   const submittedRef = useRef(false)
+  const completionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const onConnectedRef = useRef(onConnected)
+
+  useEffect(() => {
+    onConnectedRef.current = onConnected
+  }, [clearCompletionTimeout])
+
+  const clearCompletionTimeout = useCallback(() => {
+    if (completionTimeoutRef.current) clearTimeout(completionTimeoutRef.current)
+    completionTimeoutRef.current = null
+  }, [])
+
+  const armCompletionTimeout = useCallback((stage: 'waiting_for_authorization' | 'waiting_for_waba') => {
+    clearCompletionTimeout()
+    completionTimeoutRef.current = setTimeout(() => {
+      const hasCode = Boolean(codeRef.current || accessTokenRef.current)
+      const hasWaba = Boolean(dataRef.current?.waba_id)
+      void reportSignupDiagnostic('signup_completion_timeout', {
+        stage,
+        has_code: hasCode,
+        has_waba_id: hasWaba,
+      }).then((requestId) => {
+        const detail = requestId ? ` Reference: ${requestId}.` : ''
+        setError(
+          (stage === 'waiting_for_authorization'
+            ? 'Meta finished setup, but RedANT did not receive the authorization response. Close the signup window and retry.'
+            : 'RedANT received authorization but did not receive the WhatsApp Business Account ID from Meta. Please retry.') + detail,
+        )
+      })
+      submittedRef.current = false
+      codeRef.current = null
+      accessTokenRef.current = null
+      dataRef.current = null
+      setBusy(false)
+      setMessage('')
+      completionTimeoutRef.current = null
+    }, 20000)
+  }, [clearCompletionTimeout])
 
   const appId = process.env.NEXT_PUBLIC_META_APP_ID
   const configId = process.env.NEXT_PUBLIC_META_EMBEDDED_SIGNUP_CONFIG_ID
@@ -68,6 +106,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     const data = dataRef.current
     if ((!code && !accessToken) || !data?.waba_id || submittedRef.current) return
 
+    clearCompletionTimeout()
     submittedRef.current = true
     setBusy(true)
     setError('')
@@ -87,7 +126,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       const payload = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(payload.error || 'WhatsApp Embedded Signup could not be completed.')
       setMessage(payload.registered ? 'WhatsApp is connected and ready.' : 'WhatsApp is connected. Registration status will be checked next.')
-      onConnected?.()
+      onConnectedRef.current?.()
     } catch (err) {
       submittedRef.current = false
       setError(err instanceof Error ? err.message : 'WhatsApp connection failed.')
@@ -110,12 +149,20 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       if (data?.type !== 'WA_EMBEDDED_SIGNUP') return
 
       if (data.event === 'PARTNER_ADDED' || data.event === 'FINISH' || data.event === 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING') {
-        dataRef.current = data.data ?? null
+        dataRef.current = { ...(dataRef.current ?? {}), ...(data.data ?? {}) }
         setError('')
-        if (codeRef.current || accessTokenRef.current) void completeSignup()
-        else setMessage('Meta finished setup. Waiting for the authorization response…')
+        if ((codeRef.current || accessTokenRef.current) && dataRef.current.waba_id) {
+          void completeSignup()
+        } else if (!codeRef.current && !accessTokenRef.current) {
+          setMessage('Meta finished setup. Waiting for the authorization response…')
+          armCompletionTimeout('waiting_for_authorization')
+        } else {
+          setMessage('RedANT received authorization. Waiting for Meta account details…')
+          armCompletionTimeout('waiting_for_waba')
+        }
       } else if (data.event === 'CANCEL') {
         void reportSignupDiagnostic('session_cancelled', { session_event: 'CANCEL' })
+        clearCompletionTimeout()
         submittedRef.current = false
         codeRef.current = null
         accessTokenRef.current = null
@@ -125,8 +172,10 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         setError('Embedded Signup was cancelled at ' + (data.data?.current_step ?? 'the current step') + '.')
       } else if (data.event === 'ERROR') {
         void reportSignupDiagnostic('session_error', { session_event: 'ERROR' })
+        clearCompletionTimeout()
         submittedRef.current = false
         codeRef.current = null
+        accessTokenRef.current = null
         dataRef.current = null
         setBusy(false)
         setMessage('')
@@ -190,17 +239,19 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
 
     return () => {
       disposed = true
+      clearCompletionTimeout()
       if (sdkLoadTimeout) clearTimeout(sdkLoadTimeout)
       window.removeEventListener('message', handleMessage)
       if (window.fbAsyncInit === initializeSdk) delete window.fbAsyncInit
     }
-  }, [appId, configId, completeSignup])
+  }, [appId, configId, completeSignup, armCompletionTimeout, clearCompletionTimeout])
 
   const launch = async () => {
     if (!window.FB || !sdkReady || !configId) {
       setError('Meta login is not ready yet. Wait for the SDK status below, then refresh if it does not become ready.')
       return
     }
+    clearCompletionTimeout()
     codeRef.current = null
     accessTokenRef.current = null
     dataRef.current = null
@@ -214,6 +265,12 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
           const code = response.authResponse?.code
           const accessToken = response.authResponse?.accessToken
           if (!code && !accessToken) {
+            clearCompletionTimeout()
+            codeRef.current = null
+            accessTokenRef.current = null
+            dataRef.current = null
+            submittedRef.current = false
+            setBusy(false)
             setMessage('')
             const requestId = await reportSignupDiagnostic('login_callback_missing_credentials', {
               login_status: response.status ?? 'unknown',
@@ -224,7 +281,8 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
           }
           codeRef.current = code ?? null
           accessTokenRef.current = accessToken ?? null
-          if (dataRef.current) void completeSignup()
+          if (dataRef.current?.waba_id) void completeSignup()
+          else armCompletionTimeout('waiting_for_waba')
         },
         {
           config_id: configId,
@@ -242,6 +300,11 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
       // Keep the browser's actual SDK exception in DevTools and show a useful,
       // non-secret summary. A generic popup-blocker message hid SDK/config bugs.
       console.error('[RedANT] Meta FB.login threw before opening signup:', launchError)
+      clearCompletionTimeout()
+      codeRef.current = null
+      accessTokenRef.current = null
+      dataRef.current = null
+      submittedRef.current = false
       setMessage('')
       const requestId = await reportSignupDiagnostic('login_launch_exception', {
         login_status: 'unknown',
