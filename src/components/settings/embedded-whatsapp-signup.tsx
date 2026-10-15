@@ -124,7 +124,10 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         }),
       })
       const payload = await response.json().catch(() => ({}))
-      if (!response.ok) throw new Error(payload.error || 'WhatsApp Embedded Signup could not be completed.')
+      if (!response.ok) {
+        const detail = typeof payload.request_id === 'string' ? ` Reference: ${payload.request_id}.` : ''
+        throw new Error((payload.error || 'WhatsApp Embedded Signup could not be completed.') + detail)
+      }
       setMessage(payload.registered ? 'WhatsApp is connected and ready.' : 'WhatsApp is connected. Registration status will be checked next.')
       onConnectedRef.current?.()
     } catch (err) {
