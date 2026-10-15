@@ -3,7 +3,7 @@
 Audit date: 2026-10-15
 Repository: `hiskgp/redant`, default branch `main`
 
-This is a code-read audit, not a live Meta connection test. No production Instagram account was connected and no messages were sent during this audit.
+This is a code-read audit, not a live Meta connection test. No production Instagram account was connected and no messages were sent during this audit. The first schema foundation is now committed on the feature branch; the OAuth routes and UI are not yet implemented.
 
 ## Findings from the current code
 
@@ -22,11 +22,19 @@ This is a code-read audit, not a live Meta connection test. No production Instag
 - The current WhatsApp account configuration is not a suitable place to store Instagram account IDs/tokens. Instagram connection data needs a separate table or channel connection model, account-scoped policies, unique constraints, status fields, and encrypted token storage.
 - Existing WhatsApp webhook signature helper is bound to the shared Meta app-secret env var and can be a starting point only after deciding whether Instagram uses the same Meta app, secret rotation strategy, and webhook verification configuration.
 - No live Instagram OAuth, webhook subscription, comment private-reply, or database persistence test has been performed in this audit.
+- Feature branch `feat/instagram-automation-mvp` now contains migration `044_instagram_automation_foundation.sql`: connection metadata, a separate token-secrets table with no user-facing RLS policies, comment rules, and a comment-event idempotency ledger. This migration has not been applied to Supabase and is not merged to `main`.
+
+## Meta API path and product constraints
+
+- Recommended MVP path to evaluate: **Instagram API with Instagram Login**. Meta's official Postman documentation says this path supports Instagram professional accounts without requiring a linked Facebook Page and uses the current scopes `instagram_business_basic`, `instagram_business_manage_messages`, and `instagram_business_manage_comments`. The actual RedANT Meta App must still have the product, redirect URI, webhook subscriptions, and required access/review status configured.
+- Comment-to-DM must use Meta's private-reply feature, not an unrestricted normal DM. Meta's private-reply docs describe one private reply per comment within 7 days (Instagram Live comments are limited to the live broadcast). This first reply does not mean unlimited follow-up messages are allowed; standard messaging rules still apply.
+- Official reference collection: https://www.postman.com/meta/instagram/collection/6yqw8pt/instagram-api
+- Private replies reference: https://developers.facebook.com/docs/instagram-platform/private-replies
 
 ## Recommended implementation design
 
 ### 1. Separate Instagram connection model
-Add a dedicated migration for an Instagram connection table, scoped by RedANT `account_id`. Before finalizing columns, confirm the chosen Meta login path and exact identifiers returned by the API. At minimum, plan for:
+The feature branch now defines a dedicated account-scoped connection schema. Before merging, review the migration against the live Supabase schema and CI. Connection metadata is separated from encrypted token material so authenticated members cannot read the token ciphertext through normal table queries. The initial MVP permits one Instagram professional account per RedANT account; revisit this if discovery interviews prove multiple Instagram profiles per workspace are required. The migration includes:
 - primary key and `account_id` foreign key;
 - Instagram professional account ID and display username/name if available;
 - encrypted access token, token expiry/refresh metadata only as supported by the chosen auth flow;
