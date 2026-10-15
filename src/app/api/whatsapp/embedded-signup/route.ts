@@ -95,6 +95,7 @@ export async function POST(request: Request) {
       session_cancelled: 'info',
       session_error: 'error',
       login_launch_exception: 'error',
+      signup_completion_timeout: 'warn',
     } as const
     const diagnosticEvent = typeof body.diagnostic_event === 'string' ? body.diagnostic_event : ''
     if (diagnosticEvent) {
@@ -106,10 +107,17 @@ export async function POST(request: Request) {
       const loginStatus = allowedStatuses.includes(diagnostic.login_status) ? diagnostic.login_status : 'unknown'
       const hasAuthResponse = typeof diagnostic.has_auth_response === 'boolean' ? diagnostic.has_auth_response : null
       const sessionEvent = ['CANCEL', 'ERROR'].includes(diagnostic.session_event) ? diagnostic.session_event : null
+      const allowedStages = ['waiting_for_authorization', 'waiting_for_waba']
+      const stage = allowedStages.includes(diagnostic.stage) ? diagnostic.stage : null
+      const hasCode = typeof diagnostic.has_code === 'boolean' ? diagnostic.has_code : null
+      const hasWabaId = typeof diagnostic.has_waba_id === 'boolean' ? diagnostic.has_waba_id : null
       signupLog(diagnosticEvents[diagnosticEvent as keyof typeof diagnosticEvents], 'client.' + diagnosticEvent, requestId, {
         login_status: loginStatus,
         has_auth_response: hasAuthResponse,
         session_event: sessionEvent,
+        stage,
+        has_code: hasCode,
+        has_waba_id: hasWabaId,
       })
       return NextResponse.json({ success: true, request_id: requestId })
     }
