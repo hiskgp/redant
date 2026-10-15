@@ -3,7 +3,7 @@ import { after, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 import { decrypt } from '@/lib/whatsapp/encryption';
-import { verifyMetaWebhookSignature } from '@/lib/whatsapp/webhook-signature';
+import { parseAppSecrets, verifyMetaWebhookSignature } from '@/lib/whatsapp/webhook-signature';
 import { matchesInstagramKeyword, type InstagramKeywordMatchType } from '@/lib/instagram/keyword-match';
 
 export const maxDuration = 60;
@@ -63,7 +63,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const rawBody = await request.text();
-  if (!verifyMetaWebhookSignature(rawBody, request.headers.get('x-hub-signature-256'))) {
+  const appSecrets = parseAppSecrets(process.env.INSTAGRAM_APP_SECRET || process.env.META_APP_SECRET);
+  if (!verifyMetaWebhookSignature(rawBody, request.headers.get('x-hub-signature-256'), appSecrets)) {
     return NextResponse.json({ error: 'Invalid signature.' }, { status: 401 });
   }
 
