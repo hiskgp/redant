@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 import { requireRole, toErrorResponse } from '@/lib/auth/account';
@@ -50,7 +50,7 @@ function adminClient() {
   });
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const providerError = url.searchParams.get('error');
   if (providerError) {
@@ -59,14 +59,8 @@ export async function GET(request: Request) {
 
   const code = url.searchParams.get('code')?.trim() ?? '';
   const returnedState = url.searchParams.get('state') ?? '';
-  const cookieValue = request.headers
-    .get('cookie')
-    ?.split(';')
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(`${OAUTH_STATE_COOKIE}=`))
-    ?.slice(OAUTH_STATE_COOKIE.length + 1);
-
-  const [expectedState, expectedAccountId] = decodeURIComponent(cookieValue ?? '').split('.');
+  const cookieValue = request.cookies.get(OAUTH_STATE_COOKIE)?.value ?? '';
+  const [expectedState, expectedAccountId] = cookieValue.split('.');
   if (
     !returnedState ||
     !expectedState ||
