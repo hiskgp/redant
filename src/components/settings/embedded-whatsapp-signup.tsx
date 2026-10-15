@@ -63,7 +63,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
 
   useEffect(() => {
     onConnectedRef.current = onConnected
-  }, [clearCompletionTimeout])
+  }, [onConnected])
 
   const clearCompletionTimeout = useCallback(() => {
     if (completionTimeoutRef.current) clearTimeout(completionTimeoutRef.current)
@@ -134,7 +134,7 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     } finally {
       setBusy(false)
     }
-  }, [onConnected])
+  }, [clearCompletionTimeout])
 
   useEffect(() => {
     if (!appId || !configId) {
