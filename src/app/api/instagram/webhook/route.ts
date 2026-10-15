@@ -79,6 +79,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unsupported webhook payload.' }, { status: 400 });
   }
 
+  // Global kill switch: connecting an account and saving draft rules never
+  // enables outbound messages by itself. The operator may set this flag only
+  // after Meta webhook subscriptions and a live private-reply test are verified.
+  if (process.env.INSTAGRAM_AUTOMATION_ENABLED !== 'true') {
+    return NextResponse.json({ status: 'received', automation: 'paused' }, { status: 200 });
+  }
+
   // Acknowledge Meta promptly; the runtime keeps the work alive after the
   // response. Each comment is claimed with a database unique constraint before
   // any outbound request, preventing duplicate private replies on webhook retry.
