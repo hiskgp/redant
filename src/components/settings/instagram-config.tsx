@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   CheckCircle2,
@@ -103,7 +103,7 @@ export function InstagramConfig() {
     void loadStatus();
   }, [loadStatus]);
 
-  const createRule = async (event: React.FormEvent<HTMLFormElement>) => {
+  const createRule = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSavingRule(true);
     setRuleError(null);
