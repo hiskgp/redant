@@ -17,6 +17,7 @@ export async function GET() {
     }
 
     return NextResponse.json({
+      automation_enabled: process.env.INSTAGRAM_AUTOMATION_ENABLED === 'true',
       connection: data
         ? {
             id: data.id,
