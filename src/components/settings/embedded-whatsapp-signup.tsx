@@ -143,7 +143,15 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
     }
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== 'https://www.facebook.com') return
+      let originHost = ''
+      try {
+        originHost = new URL(event.origin).hostname.toLowerCase()
+      } catch {
+        return
+      }
+      // Meta can emit the session message from a Facebook-owned subdomain.
+      // Accept only facebook.com itself or a true subdomain (not lookalikes).
+      if (originHost !== 'facebook.com' && !originHost.endsWith('.facebook.com')) return
       let data: { type?: string; event?: string; data?: SignupData & { current_step?: string; error_message?: string } }
       try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch { return }
       if (data?.type !== 'WA_EMBEDDED_SIGNUP') return
