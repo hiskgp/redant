@@ -48,10 +48,11 @@ Set these in Vercel for the relevant environment:
 - `INSTAGRAM_GRAPH_API_VERSION`: currently set in the example to `v25.0`; confirm the supported version before launch.
 - `INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: generate a long random value and enter the same value in Meta Webhooks.
 - `INSTAGRAM_CRON_SECRET`: a separate long random value for token refresh.
+- `CRON_SECRET`: set to the same value as `INSTAGRAM_CRON_SECRET`. Vercel Cron uses this environment variable to send the scheduled request's `Authorization: Bearer` header.
 - `INSTAGRAM_AUTOMATION_ENABLED=false`: keep false during setup and testing.
 - Existing `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ENCRYPTION_KEY` must already be configured.
 
-Never put app secrets, service-role keys, cron secrets, or access tokens in `NEXT_PUBLIC_*` variables.
+Never put app secrets, service-role keys, cron secrets, or access tokens in `NEXT_PUBLIC_*` variables. Set production secrets in the Vercel Production environment; Preview deployments should use separate safe test values.
 
 ## 4. Configure Webhooks
 
@@ -65,16 +66,11 @@ Use the matching staging URL when testing staging. Enter the same `INSTAGRAM_WEB
 
 The route verifies the raw-body `x-hub-signature-256` using the configured Instagram Meta App Secret. Keep the secret set correctly or webhook POSTs will be rejected.
 
-## 5. Token refresh
+## 5. Token refresh schedule
 
-Instagram long-lived tokens expire. Configure a daily cron job for:
+The repository includes a Vercel Cron entry in `vercel.json` that calls `GET /api/instagram/refresh-tokens` daily at 06:00 UTC on the production deployment. Vercel Cron is configured by deployment, so confirm the cron appears in the Vercel project after the feature is merged and deployed.
 
-```text
-GET /api/instagram/refresh-tokens
-Header: x-cron-secret: <INSTAGRAM_CRON_SECRET>
-```
-
-The route checks tokens expiring within 14 days and attempts to refresh them. A missing/invalid token can require the customer to reconnect. Do not send the cron secret from the browser.
+Set both `CRON_SECRET` and `INSTAGRAM_CRON_SECRET` to the same long random secret. The endpoint accepts Vercel's `Authorization: Bearer` header and the `x-cron-secret` header for manual/other scheduler integrations. Do not send either secret from the browser. The route checks tokens expiring within 14 days and attempts to refresh them. A missing or invalid token can require the customer to reconnect.
 
 ## 6. Go-live gate
 
@@ -88,5 +84,6 @@ Keep `INSTAGRAM_AUTOMATION_ENABLED=false` until all are true:
 6. A duplicate webhook does not send a second reply.
 7. The messaging/private-reply rules, logs, pause behavior, and error handling have been tested.
 8. CI and migration checks pass.
+9. The production Vercel Cron schedule is visible and its authenticated invocation is successful.
 
 Meta private replies are not unrestricted cold DMs. The implementation is intended to send one private reply tied to the comment within the allowed window; follow-up messages remain subject to standard messaging rules.
