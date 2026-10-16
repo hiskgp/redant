@@ -112,7 +112,10 @@ export function InstagramConfig() {
     try {
       const response = await fetch('/api/instagram/disconnect', { method: 'POST' });
       const payload = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(payload?.error || 'Could not disconnect Instagram.');
+      if (!response.ok) {
+        if (payload?.disconnected === true) await loadStatus();
+        throw new Error(payload?.warning || payload?.error || 'Could not disconnect Instagram.');
+      }
       await loadStatus();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Could not disconnect Instagram.');
@@ -216,7 +219,7 @@ export function InstagramConfig() {
               )}
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              {connection?.username
+              {connection?.status === 'connected' && connection.username
                 ? `Connected as @${connection.username}`
                 : 'Connect a Business or Creator account to begin setup.'}
             </p>
