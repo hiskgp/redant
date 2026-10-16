@@ -272,8 +272,11 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
 
     try {
       window.FB.login(
-        async (response) => {
-          const code = response.authResponse?.code
+        (response) => {
+          // The Meta SDK expects a plain callback, not an async function.
+          // Keep FB.login's callback synchronous and process its result asynchronously.
+          void (async () => {
+            const code = response.authResponse?.code
           const accessToken = response.authResponse?.accessToken
           if (!code && !accessToken) {
             clearCompletionTimeout()
@@ -293,7 +296,14 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
           codeRef.current = code ?? null
           accessTokenRef.current = accessToken ?? null
           if (dataRef.current?.waba_id) void completeSignup()
-          else armCompletionTimeout('waiting_for_waba')
+            else armCompletionTimeout('waiting_for_waba')
+          })().catch((callbackError) => {
+            console.error('[RedANT] Meta login callback failed:', callbackError)
+            clearCompletionTimeout()
+            setBusy(false)
+            setMessage('')
+            setError('Meta login response could not be processed. Please retry.')
+          })
         },
         {
           config_id: configId,
