@@ -113,6 +113,22 @@ BEGIN
     RAISE EXCEPTION 'Instagram connection/rule account-scoped RLS policies are missing';
   END IF;
 
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'public.instagram_comment_events'::regclass
+      AND conname = 'instagram_comment_events_connection_comment_key'
+      AND contype = 'u'
+  ) THEN
+    RAISE EXCEPTION 'Instagram comment event idempotency constraint is missing';
+  END IF;
+
+  IF NOT (
+    SELECT relrowsecurity FROM pg_class
+    WHERE oid = 'public.instagram_comment_events'::regclass
+  ) THEN
+    RAISE EXCEPTION 'instagram_comment_events must have RLS enabled';
+  END IF;
+
   RAISE NOTICE 'schema verification passed';
 END
 $$;
