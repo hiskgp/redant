@@ -3,6 +3,10 @@
     {
       "path": "/api/instagram/refresh-tokens",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/instagram/recover-events",
+      "schedule": "15 6 * * *"
     }
   ]
 }
