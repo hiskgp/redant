@@ -75,6 +75,60 @@ BEGIN
       'messages.error_code/error_title/error_details are missing — migration 042 did not apply';
   END IF;
 
+  -- Instagram automation foundation (044): fail loudly if a guarded
+  -- migration statement silently skipped a table or security boundary.
+  IF to_regclass('public.instagram_connections') IS NULL
+     OR to_regclass('public.instagram_connection_secrets') IS NULL
+     OR to_regclass('public.instagram_comment_rules') IS NULL
+     OR to_regclass('public.instagram_comment_events') IS NULL THEN
+    RAISE EXCEPTION 'Instagram automation tables are missing — migration 044 did not apply';
+  END IF;
+
+  IF NOT (
+    SELECT relrowsecurity FROM pg_class
+    WHERE oid = 'public.instagram_connection_secrets'::regclass
+  ) THEN
+    RAISE EXCEPTION 'instagram_connection_secrets must have RLS enabled';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'instagram_connection_secrets'
+  ) THEN
+    RAISE EXCEPTION 'instagram_connection_secrets must not expose authenticated table policies';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'instagram_connections'
+      AND policyname = 'instagram_connections_select'
+  ) OR NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'instagram_comment_rules'
+      AND policyname = 'instagram_comment_rules_insert'
+  ) THEN
+    RAISE EXCEPTION 'Instagram connection/rule account-scoped RLS policies are missing';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'public.instagram_comment_events'::regclass
+      AND conname = 'instagram_comment_events_connection_comment_key'
+      AND contype = 'u'
+  ) THEN
+    RAISE EXCEPTION 'Instagram comment event idempotency constraint is missing';
+  END IF;
+
+  IF NOT (
+    SELECT relrowsecurity FROM pg_class
+    WHERE oid = 'public.instagram_comment_events'::regclass
+  ) THEN
+    RAISE EXCEPTION 'instagram_comment_events must have RLS enabled';
+  END IF;
+
   RAISE NOTICE 'schema verification passed';
 END
 $$;

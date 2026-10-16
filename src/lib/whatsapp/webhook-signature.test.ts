@@ -18,6 +18,13 @@ describe("verifyMetaWebhookSignature", () => {
     expect(verifyMetaWebhookSignature(body, signedHeader(body))).toBe(true);
   });
 
+  it("accepts a channel-specific secret override without changing the default Meta secret", () => {
+    const body = '{"object":"instagram"}';
+    const instagramSecret = "separate-instagram-app-secret";
+    expect(verifyMetaWebhookSignature(body, signedHeader(body, instagramSecret), [instagramSecret])).toBe(true);
+    expect(verifyMetaWebhookSignature(body, signedHeader(body, instagramSecret), ["wrong-secret"])).toBe(false);
+  });
+
   it("rejects a signature computed with a different secret", () => {
     const body = "{}";
     expect(verifyMetaWebhookSignature(body, signedHeader(body, "wrong"))).toBe(
