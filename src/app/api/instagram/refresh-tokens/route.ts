@@ -54,8 +54,11 @@ export async function GET(request: Request) {
     .from('instagram_connections')
     .select('id, account_id, instagram_user_id, token_expires_at')
     .eq('status', 'connected')
-    .lt('token_expires_at', cutoff)
-    .order('token_expires_at', { ascending: true })
+    // Null expiry metadata must not silently exclude a connected credential
+    // from maintenance; let Meta validate/refresh it instead of leaving it
+    // indefinitely unexamined.
+    .or(`token_expires_at.is.null,token_expires_at.lt.${cutoff}`)
+    .order('token_expires_at', { ascending: true, nullsFirst: true })
     .limit(100);
 
   if (error) {
