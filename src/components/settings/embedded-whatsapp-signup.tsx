@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { CheckCircle2, Loader2, MessageCircle, AlertTriangle } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -128,7 +129,16 @@ export function EmbeddedWhatsAppSignup({ disabled, onConnected }: Props) {
         const detail = typeof payload.request_id === 'string' ? ` Reference: ${payload.request_id}.` : ''
         throw new Error((payload.error || 'WhatsApp Embedded Signup could not be completed.') + detail)
       }
-      setMessage(payload.registered ? 'WhatsApp is connected and ready.' : 'WhatsApp is connected. Registration status will be checked next.')
+      const successMessage = payload.registered
+        ? 'WhatsApp is connected and ready.'
+        : 'WhatsApp account saved successfully. Phone registration status still needs verification.'
+      setMessage(successMessage)
+      toast.success(payload.registered ? 'WhatsApp connected successfully' : 'WhatsApp account connected', {
+        description: payload.registered
+          ? 'Your WhatsApp number is registered and ready to use.'
+          : 'Your account details are saved. Complete the registration check before sending messages.',
+        duration: 8000,
+      })
       onConnectedRef.current?.()
     } catch (err) {
       submittedRef.current = false
