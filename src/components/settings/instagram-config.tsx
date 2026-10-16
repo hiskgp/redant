@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   CheckCircle2,
-  Instagram,
+  Camera,
   Loader2,
   Plus,
   RefreshCw,
@@ -15,7 +15,7 @@ import {
 
 import { useAuth } from '@/hooks/use-auth';
 
-interface InstagramConnection {
+interface CameraConnection {
   id: string;
   instagram_user_id: string;
   username: string | null;
@@ -24,7 +24,7 @@ interface InstagramConnection {
   last_synced_at: string | null;
 }
 
-interface InstagramRule {
+interface CameraRule {
   id: string;
   name: string;
   keywords: string[];
@@ -36,28 +36,28 @@ interface InstagramRule {
 }
 
 function resultMessage(status: string | null, reason: string | null): string | null {
-  if (status === 'connected') return 'Instagram connected successfully. Your account details are saved in RedANT.';
+  if (status === 'connected') return 'Camera connected successfully. Your account details are saved in RedANT.';
   if (status !== 'error') return null;
 
   const messages: Record<string, string> = {
-    authorization_denied: 'Instagram authorization was cancelled or denied.',
+    authorization_denied: 'Camera authorization was cancelled or denied.',
     invalid_oauth_state: 'The security check expired. Start the connection again.',
     missing_authorization_code: 'Meta did not return an authorization code. Please retry.',
     account_changed_during_connection: 'Your active RedANT account changed during setup. Please retry from the correct account.',
-    instagram_account_already_connected: 'This Instagram account is already connected to another RedANT workspace.',
-    database_save_failed: 'Instagram authorized the connection, but RedANT could not save it completely. Please retry; if it persists, contact support.',
-    server_configuration: 'Instagram connection is not configured on the server yet.',
-    connection_failed: 'Instagram connection failed. Please retry and check the diagnostic logs if it continues.',
+    instagram_account_already_connected: 'This Camera account is already connected to another RedANT workspace.',
+    database_save_failed: 'Camera authorized the connection, but RedANT could not save it completely. Please retry; if it persists, contact support.',
+    server_configuration: 'Camera connection is not configured on the server yet.',
+    connection_failed: 'Camera connection failed. Please retry and check the diagnostic logs if it continues.',
   };
-  return messages[reason ?? ''] ?? 'Instagram could not be connected. Please retry.';
+  return messages[reason ?? ''] ?? 'Camera could not be connected. Please retry.';
 }
 
-export function InstagramConfig() {
+export function CameraConfig() {
   const { accountRole } = useAuth();
   const searchParams = useSearchParams();
-  const [connection, setConnection] = useState<InstagramConnection | null>(null);
+  const [connection, setConnection] = useState<CameraConnection | null>(null);
   const [automationEnabled, setAutomationEnabled] = useState(false);
-  const [rules, setRules] = useState<InstagramRule[]>([]);
+  const [rules, setRules] = useState<CameraRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [ruleError, setRuleError] = useState<string | null>(null);
@@ -66,7 +66,7 @@ export function InstagramConfig() {
   const [savingRule, setSavingRule] = useState(false);
   const [ruleName, setRuleName] = useState('Product enquiry');
   const [keywords, setKeywords] = useState('price, link');
-  const [matchType, setMatchType] = useState<InstagramRule['match_type']>('contains');
+  const [matchType, setMatchType] = useState<CameraRule['match_type']>('contains');
   const [replyText, setReplyText] = useState('Thanks for your interest! Please reply here and our team will help you with the product details.');
   const canManage = accountRole === 'owner' || accountRole === 'admin';
   const callbackMessage = resultMessage(
@@ -81,7 +81,7 @@ export function InstagramConfig() {
       const response = await fetch('/api/instagram/status', { cache: 'no-store' });
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        throw new Error(payload?.error || 'Could not load Instagram connection status.');
+        throw new Error(payload?.error || 'Could not load Camera connection status.');
       }
       setConnection(payload?.connection ?? null);
       setAutomationEnabled(payload?.automation_enabled === true);
@@ -90,12 +90,12 @@ export function InstagramConfig() {
         const rulesResponse = await fetch('/api/instagram/rules', { cache: 'no-store' });
         const rulesPayload = await rulesResponse.json().catch(() => null);
         if (!rulesResponse.ok) {
-          throw new Error(rulesPayload?.error || 'Could not load Instagram rules.');
+          throw new Error(rulesPayload?.error || 'Could not load Camera rules.');
         }
         setRules(Array.isArray(rulesPayload?.rules) ? rulesPayload.rules : []);
       }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Could not load Instagram connection status.');
+      setError(cause instanceof Error ? cause.message : 'Could not load Camera connection status.');
     } finally {
       setLoading(false);
     }
@@ -105,8 +105,8 @@ export function InstagramConfig() {
     void loadStatus();
   }, [loadStatus]);
 
-  const disconnectInstagram = async () => {
-    if (!window.confirm('Disconnect Instagram from this RedANT workspace? Automation rules will be paused and the saved token will be removed.')) return;
+  const disconnectCamera = async () => {
+    if (!window.confirm('Disconnect Camera from this RedANT workspace? Automation rules will be paused and the saved token will be removed.')) return;
     setDisconnecting(true);
     setError(null);
     try {
@@ -114,11 +114,11 @@ export function InstagramConfig() {
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
         if (payload?.disconnected === true) await loadStatus();
-        throw new Error(payload?.warning || payload?.error || 'Could not disconnect Instagram.');
+        throw new Error(payload?.warning || payload?.error || 'Could not disconnect Camera.');
       }
       await loadStatus();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Could not disconnect Instagram.');
+      setError(cause instanceof Error ? cause.message : 'Could not disconnect Camera.');
     } finally {
       setDisconnecting(false);
     }
@@ -141,7 +141,7 @@ export function InstagramConfig() {
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) throw new Error(payload?.error || 'Could not save this rule.');
-      setRules((current) => [...current, payload.rule as InstagramRule]);
+      setRules((current) => [...current, payload.rule as CameraRule]);
       setRuleName('');
       setKeywords('');
     } catch (cause) {
@@ -151,7 +151,7 @@ export function InstagramConfig() {
     }
   };
 
-  const updateRule = async (id: string, patch: Partial<Pick<InstagramRule, 'is_active'>>) => {
+  const updateRule = async (id: string, patch: Partial<Pick<CameraRule, 'is_active'>>) => {
     setRuleError(null);
     try {
       const response = await fetch(`/api/instagram/rules/${id}`, {
@@ -161,7 +161,7 @@ export function InstagramConfig() {
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) throw new Error(payload?.error || 'Could not update this rule.');
-      setRules((current) => current.map((rule) => rule.id === id ? payload.rule as InstagramRule : rule));
+      setRules((current) => current.map((rule) => rule.id === id ? payload.rule as CameraRule : rule));
     } catch (cause) {
       setRuleError(cause instanceof Error ? cause.message : 'Could not update this rule.');
     }
@@ -182,10 +182,10 @@ export function InstagramConfig() {
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">Instagram automation</h2>
+        <h2 className="text-lg font-semibold text-foreground">Camera automation</h2>
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-          Connect an Instagram professional account and prepare comment-to-private-reply rules.
-          Only official Meta authorization is supported; personal Instagram accounts cannot connect.
+          Connect an Camera professional account and prepare comment-to-private-reply rules.
+          Only official Meta authorization is supported; personal Camera accounts cannot connect.
         </p>
       </div>
 
@@ -203,11 +203,11 @@ export function InstagramConfig() {
       <div className="rounded-xl border border-border bg-card p-5">
         <div className="flex items-start gap-3">
           <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-pink-500/10 text-pink-600">
-            <Instagram className="size-5" aria-hidden="true" />
+            <Camera className="size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="font-semibold text-foreground">Instagram account</h3>
+              <h3 className="font-semibold text-foreground">Camera account</h3>
               {connection?.status === 'connected' ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 className="size-3.5" aria-hidden="true" /> Connected
@@ -246,21 +246,21 @@ export function InstagramConfig() {
               disabled={connecting || loading}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {connecting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Instagram className="size-4" aria-hidden="true" />}
-              {connection?.status === 'connected' ? 'Reconnect Instagram' : 'Connect Instagram'}
+              {connecting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Camera className="size-4" aria-hidden="true" />}
+              {connection?.status === 'connected' ? 'Reconnect Camera' : 'Connect Camera'}
             </button>
           ) : (
-            <p className="text-sm text-muted-foreground">An account owner or admin must connect Instagram.</p>
+            <p className="text-sm text-muted-foreground">An account owner or admin must connect Camera.</p>
           )}
           {canManage && connection?.status === 'connected' ? (
             <button
               type="button"
-              onClick={() => void disconnectInstagram()}
+              onClick={() => void disconnectCamera()}
               disabled={disconnecting || loading}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-destructive/40 px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/5 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {disconnecting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Unplug className="size-4" aria-hidden="true" />}
-              Disconnect Instagram
+              Disconnect Camera
             </button>
           ) : null}
           <button
@@ -323,7 +323,7 @@ export function InstagramConfig() {
               <span className="font-medium text-foreground">Match type</span>
               <select
                 value={matchType}
-                onChange={(event) => setMatchType(event.target.value as InstagramRule['match_type'])}
+                onChange={(event) => setMatchType(event.target.value as CameraRule['match_type'])}
                 className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <option value="contains">Contains keyword</option>
@@ -408,7 +408,7 @@ export function InstagramConfig() {
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           <div className="space-y-1 text-sm text-muted-foreground">
             <p className="font-medium text-foreground">Safe by design</p>
-            <p>RedANT never asks for your Instagram password. Access tokens are stored encrypted on the server and are not returned by the status API.</p>
+            <p>RedANT never asks for your Camera password. Access tokens are stored encrypted on the server and are not returned by the status API.</p>
             <p>Comment automation remains paused until the actual Meta webhook setup and live private-reply flow have been verified.</p>
           </div>
         </div>
