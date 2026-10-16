@@ -10,6 +10,7 @@ import {
   RefreshCw,
   ShieldCheck,
   Trash2,
+  Unplug,
 } from 'lucide-react';
 
 import { useAuth } from '@/hooks/use-auth';
@@ -61,6 +62,7 @@ export function InstagramConfig() {
   const [error, setError] = useState<string | null>(null);
   const [ruleError, setRuleError] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
   const [savingRule, setSavingRule] = useState(false);
   const [ruleName, setRuleName] = useState('Product enquiry');
   const [keywords, setKeywords] = useState('price, link');
@@ -102,6 +104,22 @@ export function InstagramConfig() {
   useEffect(() => {
     void loadStatus();
   }, [loadStatus]);
+
+  const disconnectInstagram = async () => {
+    if (!window.confirm('Disconnect Instagram from this RedANT workspace? Automation rules will be paused and the saved token will be removed.')) return;
+    setDisconnecting(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/instagram/disconnect', { method: 'POST' });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(payload?.error || 'Could not disconnect Instagram.');
+      await loadStatus();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not disconnect Instagram.');
+    } finally {
+      setDisconnecting(false);
+    }
+  };
 
   const createRule = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -231,6 +249,17 @@ export function InstagramConfig() {
           ) : (
             <p className="text-sm text-muted-foreground">An account owner or admin must connect Instagram.</p>
           )}
+          {canManage && connection?.status === 'connected' ? (
+            <button
+              type="button"
+              onClick={() => void disconnectInstagram()}
+              disabled={disconnecting || loading}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-destructive/40 px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/5 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {disconnecting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Unplug className="size-4" aria-hidden="true" />}
+              Disconnect Instagram
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={() => void loadStatus()}
