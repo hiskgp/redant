@@ -32,6 +32,21 @@ export async function PATCH(
           error: 'Instagram automation is paused until Meta webhook setup and live private-reply tests are verified.',
         }, { status: 409 });
       }
+      if (input.is_active) {
+        const { data: connection, error: connectionError } = await supabase
+          .from('instagram_connections')
+          .select('status')
+          .eq('account_id', accountId)
+          .maybeSingle();
+
+        if (connectionError) {
+          console.error('[instagram-rules] connection status lookup failed', connectionError.code ?? 'unknown');
+          return NextResponse.json({ error: 'Could not verify the Instagram connection.' }, { status: 500 });
+        }
+        if (connection?.status !== 'connected') {
+          return NextResponse.json({ error: 'Connect Instagram before activating a rule.' }, { status: 409 });
+        }
+      }
       patch.is_active = input.is_active;
     }
 
