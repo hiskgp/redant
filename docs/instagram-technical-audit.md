@@ -1,101 +1,64 @@
 # Instagram Automation — Repository Technical Audit
 
-Audit date: 2026-10-15
-Repository: `hiskgp/redant`, default branch `main`
+Audit date: 2026-10-16  
+Repository: `hiskgp/redant`  
+Feature branch: `feat/instagram-automation-mvp`  
+Pull request: https://github.com/hiskgp/redant/pull/28 (draft; not merged)
 
-This is a code-read audit, not a live Meta connection test. No production Instagram account was connected and no messages were sent during this audit. The first schema foundation is now committed on the feature branch; the OAuth routes and UI are not yet implemented.
+## Scope and confidence
 
-## Findings from the current code
+This is a code and CI audit, not a live Meta integration test. No live Instagram account, webhook delivery, or private reply has been verified by this audit. The feature is **not production-ready** until the live go/no-go checks below pass.
 
-### Reusable foundations
-- Next.js App Router API routes are the existing backend convention.
-- Supabase account tenancy is established through `accounts`, `profiles.account_id`, and account-aware data access. The current automation engine filters automations by `account_id` and verifies contact ownership before dispatch.
-- `src/lib/whatsapp/webhook-signature.ts` verifies Meta's `x-hub-signature-256` over the raw request body, fails closed if `META_APP_SECRET` is missing, supports multiple app secrets, and uses constant-time comparison. It is WhatsApp-named today and should not be imported blindly into an Instagram route until shared ownership/configuration requirements are clarified.
-- `src/lib/whatsapp/encryption.ts` provides authenticated AES-256-GCM encryption for tokens and supports decrypt-only legacy CBC data. An Instagram integration should use a channel-neutral secure-token abstraction or a carefully tested reuse of this helper, not plaintext token columns.
-- Existing structured diagnostic logging patterns can be adapted, with strict allowlists and no access tokens, auth codes, raw payloads, or customer message contents in logs.
-- Existing Vitest coverage and CI scripts provide a path for unit and route regression tests.
+## Implemented on the feature branch
 
-### Gaps that block a production Instagram feature
-- No Instagram-specific API route or Instagram integration file appeared in the repository path audit.
-- `AutomationTriggerType` currently contains WhatsApp/CRM events only; there is no Instagram comment trigger.
-- Existing `send_message` automation steps call the WhatsApp sender. They cannot safely be repurposed as Instagram sends without an explicit channel model and sender implementation.
-- The current WhatsApp account configuration is not a suitable place to store Instagram account IDs/tokens. Instagram connection data needs a separate table or channel connection model, account-scoped policies, unique constraints, status fields, and encrypted token storage.
-- Existing WhatsApp webhook signature helper is bound to the shared Meta app-secret env var and can be a starting point only after deciding whether Instagram uses the same Meta app, secret rotation strategy, and webhook verification configuration.
-- No live Instagram OAuth, webhook subscription, comment private-reply, or database persistence test has been performed in this audit.
-- Feature branch `feat/instagram-automation-mvp` now contains migration `044_instagram_automation_foundation.sql`: connection metadata, a separate token-secrets table with no user-facing RLS policies, comment rules, and a comment-event idempotency ledger. This migration has not been applied to Supabase and is not merged to `main`.
+- Account-scoped Instagram connection metadata, separate encrypted-token storage, keyword rules, and a comment-event idempotency ledger in migrations 044 and 045.
+- Instagram Login OAuth connect/callback, account/admin checks, state-cookie validation, token exchange, and connection status/disconnect APIs.
+- Instagram settings UI and keyword rule management.
+- Webhook GET verification and POST raw-body signature verification; outbound private replies are guarded by the global `INSTAGRAM_AUTOMATION_ENABLED=false` safety switch.
+- Duplicate comment IDs are rejected by a database uniqueness constraint before any send attempt. Ambiguous send outcomes are not automatically retried.
+- Token-refresh endpoint and scheduled cron entry.
+- Stale `processing` events are quarantined as `review_required` for manual review; the recovery job never automatically resends a private reply.
+- Unit tests for OAuth helper and keyword matching, plus schema verification for the Instagram tables and key security boundaries.
 
-## Meta API path and product constraints
+## CI and deployment checks
 
-- Recommended MVP path to evaluate: **Instagram API with Instagram Login**. Meta's official Postman documentation says this path supports Instagram professional accounts without requiring a linked Facebook Page and uses the current scopes `instagram_business_basic`, `instagram_business_manage_messages`, and `instagram_business_manage_comments`. The actual RedANT Meta App must still have the product, redirect URI, webhook subscriptions, and required access/review status configured.
-- Comment-to-DM must use Meta's private-reply feature, not an unrestricted normal DM. Meta's private-reply docs describe one private reply per comment within 7 days (Instagram Live comments are limited to the live broadcast). This first reply does not mean unlimited follow-up messages are allowed; standard messaging rules still apply.
-- Official reference collection: https://www.postman.com/meta/instagram/collection/6yqw8pt/instagram-api
-- Private replies reference: https://developers.facebook.com/docs/instagram-platform/private-replies
+For commit `6b777c08279636a6d08b645ce53d6556b87a12fb`:
 
-## Recommended implementation design
+- GitHub CI run 147: **passed** (lint, typecheck, tests, build).
+- Migration workflow run 40: **passed** (replay all migrations against a clean database and verify resulting schema).
+- Vercel commit check: **success**.
 
-### 1. Separate Instagram connection model
-The feature branch now defines a dedicated account-scoped connection schema. Before merging, review the migration against the live Supabase schema and CI. Connection metadata is separated from encrypted token material so authenticated members cannot read the token ciphertext through normal table queries. The initial MVP permits one Instagram professional account per RedANT account; revisit this if discovery interviews prove multiple Instagram profiles per workspace are required. The migration includes:
-- primary key and `account_id` foreign key;
-- Instagram professional account ID and display username/name if available;
-- encrypted access token, token expiry/refresh metadata only as supported by the chosen auth flow;
-- connection status and timestamps;
-- unique constraints preventing the same provider account being claimed incorrectly;
-- RLS that follows existing account membership/role rules;
-- service-role-only token access, with no token returned to browser clients.
+These checks validate code/build/schema replay. They do **not** prove the migration has been applied to the actual Supabase project, that Vercel production cron jobs are active, or that Meta OAuth/webhooks/private replies work against a real account.
 
-Never store Instagram credentials in `whatsapp_config`.
+## Meta product and messaging constraints
 
-### 2. Dedicated Instagram API and webhook boundary
-- Implement authenticated connect/callback routes using the selected official Meta login method and state/CSRF protection.
-- Implement webhook verification and POST signature verification against the raw request body; reject invalid signatures.
-- Subscribe only to the required webhook fields after verifying exact requirements in Meta's current official documentation and App Dashboard.
-- Parse and validate webhook payloads as untrusted external input.
-- Persist a deduplication key for provider event/comment IDs before sending a reply. Retries must not create duplicate replies.
-- Use sanitized structured diagnostics with request/event IDs, stage, provider status/error codes, and no tokens, authorization codes, raw message bodies, or full webhook payloads.
+- The implementation targets Instagram API with Instagram Login and uses `instagram_business_basic`, `instagram_business_manage_messages`, and `instagram_business_manage_comments`. Confirm these permissions and product setup in the actual Meta App Dashboard before onboarding users.
+- Configure the exact callback URL for each environment in Meta and `INSTAGRAM_REDIRECT_URI`; scheme, host, path, and trailing slash must match.
+- Configure webhook callback `/api/instagram/webhook`, the matching `INSTAGRAM_WEBHOOK_VERIFY_TOKEN`, and the required comment subscription for the selected product.
+- Private replies are not unrestricted cold DMs. Keep replies tied to the comment and respect Meta's one-private-reply/window rules and all follow-up messaging restrictions.
+- Official starting points: https://www.postman.com/meta/instagram/collection/6yqw8pt/instagram-api and https://developers.facebook.com/docs/instagram-platform/private-replies
 
-### 3. Explicit channel-aware automation
-Do not change the meaning of existing WhatsApp triggers or send steps. Introduce Instagram as an explicit channel only after its data model and supported workflows are agreed:
-- Instagram comment/private-reply trigger is distinct from an inbound DM trigger.
-- Instagram sending uses the official Instagram Messaging API and its permission/eligibility/messaging-window rules.
-- Existing WhatsApp sender and behavior remain unchanged.
-- Each execution must be account-scoped, idempotent, pausable, rate-limited, and observable.
-- Human handoff and an account-level automation pause must be available before customer pilots.
+## Security and operational notes
 
-### 4. Test plan
-Unit and integration tests must cover:
-- malformed and forged webhook signatures;
-- valid signatures and webhook verification challenge;
-- unsupported/invalid payloads;
-- duplicate webhook deliveries and repeated comment events;
-- disconnected or unsupported accounts and missing permissions;
-- encrypted token round-trip and absence of token/code/message-body leakage in logs;
-- account isolation and attempts to use another tenant's connection;
-- Meta API errors, retryable failures, rate limits, and safe retry behavior;
-- pause/disable behavior;
-- exactly one permitted private reply in a live Meta test account.
+- Keep access tokens encrypted in `instagram_connection_secrets`; never expose token material through browser-facing status APIs or logs.
+- Keep `INSTAGRAM_AUTOMATION_ENABLED=false` until all live tests pass. Connecting an account or activating a draft rule must not by itself enable outbound automation.
+- Set `INSTAGRAM_CRON_SECRET` and `CRON_SECRET` to the same strong random value so Vercel Cron's Bearer authorization is accepted. The same cron secret protects token refresh and stale-event recovery routes; do not expose it to the browser.
+- `vercel.json` schedules token refresh daily at 06:00 UTC and stale-event recovery at 06:15 UTC. Confirm the jobs appear in the Vercel project's production deployment after merge/deploy.
+- Recovery deliberately quarantines stale events rather than resending them. This avoids duplicate private replies if Meta accepted a request before the process or database update failed.
+- Migration CI only proves migrations replay on a clean CI database. Review compatibility with the real Supabase project's migration history before applying.
+- The MVP allows one Instagram professional account per RedANT account; revisit only if product discovery requires multiple profiles.
 
-## Go/no-go gates
+## Required live go/no-go checks
 
-Do not claim the feature is production-ready until:
-1. Meta app permissions, login method, webhook fields, and review requirements are verified in current official documentation and the actual app dashboard.
-2. A test Instagram Professional account connects through the intended flow.
-3. The account record persists to Supabase and appears in the UI after refresh.
-4. A supported test comment triggers one permitted private reply, with duplicates suppressed.
-5. CI passes and tenant-isolation/security checks are reviewed.
-6. A pilot customer has explicitly approved the test and understands the pilot's scope.
+1. Review Meta app product, permissions/review status, exact redirect URI, and webhook subscriptions.
+2. Apply migrations 044 and 045 to the intended Supabase project using the team's normal migration process.
+3. Connect a test Instagram Business/Creator account and confirm the username persists after page refresh.
+4. Confirm token ciphertext is stored separately and never returned by status APIs.
+5. Deliver a valid comment webhook to the deployed endpoint and confirm signature verification.
+6. Verify a matching test comment sends exactly one permitted private reply.
+7. Replay the same webhook and confirm no second reply is sent.
+8. Test paused automation, no keyword match, disconnected account, provider rejection, token refresh, and stale-event quarantine.
+9. Confirm authenticated cron invocations and scheduled jobs in the deployed Vercel project.
+10. Only then consider enabling automation for an explicitly approved pilot account.
 
-## Immediate engineering order
-
-1. Confirm the Meta login/API path and permissions before defining the connection schema.
-2. Add the schema and security tests in a feature branch.
-3. Add connect/callback and webhook routes with mocked Meta API tests.
-4. Add the minimal comment-to-private-reply workflow, event dedupe, pause switch, and diagnostics.
-5. Verify against a real test account, then run a paid pilot only after the go/no-go gates pass.
-
-## Official reference starting points
-
-- Meta Instagram API collection: https://www.postman.com/meta/instagram/collection/6yqw8pt/instagram-api
-- Meta's Instagram Messaging documentation: https://developers.facebook.com/docs/messenger-platform/instagram
-- Private replies feature: https://developers.facebook.com/docs/business-messaging/instagram-messaging/features/private-replies
-
-Re-check these references and the app dashboard immediately before implementation; permissions and onboarding requirements can change.
+Until these checks are completed, describe the feature as an implementation-ready **draft MVP**, not a verified or production-ready Instagram automation service.
