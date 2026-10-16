@@ -6,13 +6,23 @@ import { decrypt, encrypt } from '@/lib/whatsapp/encryption';
 
 const REFRESH_WINDOW_DAYS = 14;
 
-function authorized(request: Request): boolean {
-  const expected = process.env.INSTAGRAM_CRON_SECRET;
-  const supplied = request.headers.get('x-cron-secret') ?? '';
-  if (!expected) return false;
+function constantTimeEqual(supplied: string, expected: string): boolean {
   const a = Buffer.from(supplied);
   const b = Buffer.from(expected);
   return a.length === b.length && timingSafeEqual(a, b);
+}
+
+function authorized(request: Request): boolean {
+  const expected = process.env.INSTAGRAM_CRON_SECRET;
+  if (!expected) return false;
+
+  // Vercel Cron sends Authorization: Bearer <CRON_SECRET> when CRON_SECRET
+  // is configured in the project environment. Keep the custom header for
+  // manual/other scheduler integrations, but compare either value safely.
+  const authorization = request.headers.get('authorization') ?? '';
+  const bearer = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
+  const custom = request.headers.get('x-cron-secret') ?? '';
+  return constantTimeEqual(bearer, expected) || constantTimeEqual(custom, expected);
 }
 
 function adminClient() {
