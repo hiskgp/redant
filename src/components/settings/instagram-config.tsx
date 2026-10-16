@@ -228,6 +228,16 @@ export function InstagramConfig() {
                 Access token expires: {new Date(connection.token_expires_at).toLocaleDateString()}
               </p>
             ) : null}
+            {connection?.status === 'reauthorization_required' ? (
+              <p role="alert" className="mt-2 rounded-md border border-amber-500/30 bg-amber-500/5 p-2 text-sm text-foreground">
+                Instagram needs to be reconnected before automation can resume. Use the reconnect button to authorize again.
+              </p>
+            ) : null}
+            {connection?.status === 'error' ? (
+              <p role="alert" className="mt-2 rounded-md border border-destructive/30 bg-destructive/5 p-2 text-sm text-foreground">
+                RedANT could not finish saving or validating this connection. Reconnect Instagram; if the issue persists, contact support.
+              </p>
+            ) : null}
           </div>
         </div>
 
@@ -247,7 +257,7 @@ export function InstagramConfig() {
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {connecting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Camera className="size-4" aria-hidden="true" />}
-              {connection?.status === 'connected' ? 'Reconnect Instagram' : 'Connect Instagram'}
+              {connection?.status === 'connected' || connection?.status === 'reauthorization_required' || connection?.status === 'error' ? 'Reconnect Instagram' : 'Connect Instagram'}
             </button>
           ) : (
             <p className="text-sm text-muted-foreground">An account owner or admin must connect Instagram.</p>
