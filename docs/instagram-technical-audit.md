@@ -22,13 +22,13 @@ This is a code and CI audit, not a live Meta integration test. No live Instagram
 
 ## CI and deployment checks
 
-For latest audited commit `546b0af185dec828148696ea29062dfdd100cd10`:
+For latest audited commit `b3955cc8ccc5cfe9d64eab80aaebdb1b4c87619d`:
 
-- GitHub CI run 149: **passed** (lint, typecheck, tests, build).
-- Migration workflow run 42: **passed** (replay all migrations against a clean database and verify resulting schema).
+- GitHub CI run 150: **passed** (lint, typecheck, tests, build).
+- Migration workflow run 43: **passed** (replay all migrations against a clean database and verify resulting schema).
 - Vercel commit check: **success**.
 
-These checks validate code/build/schema replay. They do **not** prove the migration has been applied to the actual Supabase project, that Vercel production cron jobs are active, or that Meta OAuth/webhooks/private replies work against a real account.
+These checks validate code/build/schema replay. The Vercel commit status also reports success for this commit, but this is not proof of a working deployed Instagram integration. They do **not** prove the migration has been applied to the actual Supabase project, that Vercel production cron jobs are active, or that Meta OAuth/webhooks/private replies work against a real account.
 
 ## Meta product and messaging constraints
 
