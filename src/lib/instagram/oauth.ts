@@ -53,7 +53,7 @@ export function getInstagramOAuthConfig(env: Env = process.env): InstagramOAuthC
     throw new Error('Instagram redirect URI must use HTTPS.');
   }
 
-  if (!/^v\\d+\\.\\d+$/.test(graphApiVersion)) {
+  if (!/^v\d+\.\d+$/.test(graphApiVersion)) {
     throw new Error('Instagram Graph API version is invalid.');
   }
 
@@ -150,7 +150,7 @@ export async function exchangeInstagramAuthorizationCode(
       : '';
   const username = typeof profileBody.username === 'string' ? profileBody.username : null;
 
-  if (!profileResponse.ok || !/^\\d+$/.test(userId)) {
+  if (!profileResponse.ok || !/^\d+$/.test(userId)) {
     throw providerError(profileBody, 'Could not verify the connected Instagram professional account.');
   }
 
