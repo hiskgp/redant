@@ -13,6 +13,14 @@ describe('Instagram OAuth helpers', () => {
     expect(() => getInstagramOAuthConfig({})).toThrow(/not configured/i);
   });
 
+  it('does not fall back to generic Meta app credentials for Instagram Login', () => {
+    expect(() => getInstagramOAuthConfig({
+      META_APP_ID: 'facebook-or-whatsapp-app-id',
+      META_APP_SECRET: 'generic-meta-app-secret',
+      INSTAGRAM_REDIRECT_URI: 'https://staging.redant.in/api/instagram/callback',
+    })).toThrow(/not configured/i);
+  });
+
   it('rejects non-HTTPS redirect URIs outside localhost', () => {
     expect(() => getInstagramOAuthConfig({
       INSTAGRAM_APP_ID: 'app-id',
