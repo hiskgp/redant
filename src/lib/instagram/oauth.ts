@@ -27,8 +27,12 @@ export interface InstagramAccessToken {
 type Env = Record<string, string | undefined>;
 
 export function getInstagramOAuthConfig(env: Env = process.env): InstagramOAuthConfig {
-  const appId = env.INSTAGRAM_APP_ID?.trim() || env.META_APP_ID?.trim();
-  const appSecret = env.INSTAGRAM_APP_SECRET?.trim() || env.META_APP_SECRET?.split(',')[0]?.trim();
+  // Instagram Login uses the credentials shown under Instagram > API setup
+  // with Instagram Login. Do not silently fall back to the generic Meta App
+  // credentials: using the Facebook/WhatsApp app ID here can trigger
+  // Instagram's opaque "Invalid platform app" authorization error.
+  const appId = env.INSTAGRAM_APP_ID?.trim();
+  const appSecret = env.INSTAGRAM_APP_SECRET?.trim();
   const redirectUri = env.INSTAGRAM_REDIRECT_URI?.trim();
   const graphApiVersion = env.INSTAGRAM_GRAPH_API_VERSION?.trim() || 'v25.0';
 
@@ -49,7 +53,7 @@ export function getInstagramOAuthConfig(env: Env = process.env): InstagramOAuthC
     throw new Error('Instagram redirect URI must use HTTPS.');
   }
 
-  if (!/^v\d+\.\d+$/.test(graphApiVersion)) {
+  if (!/^v\\d+\\.\\d+$/.test(graphApiVersion)) {
     throw new Error('Instagram Graph API version is invalid.');
   }
 
@@ -146,7 +150,7 @@ export async function exchangeInstagramAuthorizationCode(
       : '';
   const username = typeof profileBody.username === 'string' ? profileBody.username : null;
 
-  if (!profileResponse.ok || !/^\d+$/.test(userId)) {
+  if (!profileResponse.ok || !/^\\d+$/.test(userId)) {
     throw providerError(profileBody, 'Could not verify the connected Instagram professional account.');
   }
 
