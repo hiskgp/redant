@@ -86,6 +86,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: 'received', automation: 'paused' }, { status: 200 });
   }
 
+  // Log only non-sensitive routing metadata so webhook delivery can be distinguished
+  // from successful comment processing. Never log comment text, tokens, or secrets.
+  console.info('[instagram-webhook] payload accepted', {
+    object: payload.object,
+    entryCount: payload.entry.length,
+    entries: payload.entry.map((entry) => ({
+      instagramUserId: typeof entry.id === 'string' ? entry.id : null,
+      changeFields: (entry.changes ?? []).map((change) => change.field ?? 'unknown'),
+    })),
+    automationEnabled: process.env.INSTAGRAM_AUTOMATION_ENABLED === 'true',
+  });
+
   // Acknowledge Meta promptly; the runtime keeps the work alive after the
   // response. Each comment is claimed with a database unique constraint before
   // any outbound request, preventing duplicate private replies on webhook retry.
