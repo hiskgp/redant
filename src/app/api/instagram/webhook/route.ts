@@ -128,7 +128,12 @@ async function processComment(
     .maybeSingle();
 
   if (connectionError || !connection) {
-    console.warn('[instagram-webhook] no active connection for comment event');
+    // Log identifiers and database error codes only; never log access tokens or secrets.
+    console.warn('[instagram-webhook] connection lookup failed', {
+      webhookInstagramUserId: instagramUserId,
+      matchedConnection: Boolean(connection),
+      databaseErrorCode: connectionError?.code ?? null,
+    });
     return;
   }
 
