@@ -132,18 +132,21 @@ async function processComment(
   }
 
   const db = adminClient();
+  // Look up by the webhook's account ID first, independently of status. This
+  // distinguishes an ID mismatch from a row that exists but is not connected.
   const { data: connection, error: connectionError } = await db
     .from('instagram_connections')
     .select('id, account_id, instagram_user_id, status')
     .eq('instagram_user_id', instagramUserId)
-    .eq('status', 'connected')
     .maybeSingle();
 
-  if (connectionError || !connection) {
-    // Log identifiers and database error codes only; never log access tokens or secrets.
+  if (connectionError || !connection || connection.status !== 'connected') {
+    // Log only account IDs, status and database error codes; never log credentials.
     console.warn('[instagram-webhook] connection lookup failed', {
       webhookInstagramUserId: instagramUserId,
       matchedConnection: Boolean(connection),
+      storedInstagramUserId: connection?.instagram_user_id ?? null,
+      connectionStatus: connection?.status ?? null,
       databaseErrorCode: connectionError?.code ?? null,
     });
     return;
