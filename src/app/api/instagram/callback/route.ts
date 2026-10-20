@@ -10,25 +10,28 @@ import {
 
 const OAUTH_STATE_COOKIE = 'redant_instagram_oauth_state';
 
-function settingsUrl(status: 'connected' | 'error', reason?: string): URL {
+function callbackDestinationUrl(status: 'connected' | 'error', reason?: string): URL {
   let base = 'https://redant.in';
   try {
     base = new URL(getInstagramOAuthConfig().redirectUri).origin;
   } catch {
     // Use the production origin if the redirect URI is not configured.
   }
-  const url = new URL('/settings', base);
-  url.searchParams.set('tab', 'instagram');
+
+  // Successful OAuth must return the user to the dashboard. Errors stay on
+  // Instagram settings so the user can see the actionable connection message.
+  const url = new URL(status === 'connected' ? '/dashboard' : '/settings', base);
+  if (status === 'error') url.searchParams.set('tab', 'instagram');
   url.searchParams.set('instagram_status', status);
   if (reason) url.searchParams.set('instagram_reason', reason);
   return url;
 }
 
-function redirectToSettings(
+function redirectAfterOAuth(
   status: 'connected' | 'error',
   reason?: string,
 ): NextResponse {
-  const response = NextResponse.redirect(settingsUrl(status, reason));
+  const response = NextResponse.redirect(callbackDestinationUrl(status, reason));
   response.cookies.set(OAUTH_STATE_COOKIE, '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -54,7 +57,7 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const providerError = url.searchParams.get('error');
   if (providerError) {
-    return redirectToSettings('error', 'authorization_denied');
+    return redirectAfterOAuth('error', 'authorization_denied');
   }
 
   const code = url.searchParams.get('code')?.trim() ?? '';
@@ -67,17 +70,17 @@ export async function GET(request: NextRequest) {
     returnedState !== expectedState ||
     !/^[0-9a-f-]{36}$/i.test(expectedAccountId ?? '')
   ) {
-    return redirectToSettings('error', 'invalid_oauth_state');
+    return redirectAfterOAuth('error', 'invalid_oauth_state');
   }
 
   if (!code || code.length > 4096) {
-    return redirectToSettings('error', 'missing_authorization_code');
+    return redirectAfterOAuth('error', 'missing_authorization_code');
   }
 
   try {
     const { accountId, userId } = await requireRole('admin');
     if (accountId !== expectedAccountId) {
-      return redirectToSettings('error', 'account_changed_during_connection');
+      return redirectAfterOAuth('error', 'account_changed_during_connection');
     }
 
     const config = getInstagramOAuthConfig();
@@ -104,10 +107,10 @@ export async function GET(request: NextRequest) {
 
     if (connectionError || !row) {
       if (connectionError?.code === '23505') {
-        return redirectToSettings('error', 'instagram_account_already_connected');
+        return redirectAfterOAuth('error', 'instagram_account_already_connected');
       }
       console.error('[instagram-oauth] connection metadata persistence failed', connectionError?.code ?? 'unknown');
-      return redirectToSettings('error', 'database_save_failed');
+      return redirectAfterOAuth('error', 'database_save_failed');
     }
 
     const { error: secretError } = await db
@@ -124,7 +127,7 @@ export async function GET(request: NextRequest) {
         .update({ status: 'error', last_error_code: 'credential_persistence_failed' })
         .eq('id', row.id)
         .eq('account_id', accountId);
-      return redirectToSettings('error', 'database_save_failed');
+      return redirectAfterOAuth('error', 'database_save_failed');
     }
 
     const { error: activateError } = await db
@@ -135,16 +138,16 @@ export async function GET(request: NextRequest) {
 
     if (activateError) {
       console.error('[instagram-oauth] connection activation failed', activateError.code ?? 'unknown');
-      return redirectToSettings('error', 'database_save_failed');
+      return redirectAfterOAuth('error', 'database_save_failed');
     }
 
-    return redirectToSettings('connected');
+    return redirectAfterOAuth('connected');
   } catch (error) {
     // Never log authorization codes, provider URLs, raw payloads, or tokens.
     console.error('[instagram-oauth] callback failed', error instanceof Error ? error.name : 'UnknownError');
     if (error instanceof Error && error.message === 'Instagram persistence is not configured.') {
-      return redirectToSettings('error', 'server_configuration');
+      return redirectAfterOAuth('error', 'server_configuration');
     }
-    return redirectToSettings('error', 'connection_failed');
+    return redirectAfterOAuth('error', 'connection_failed');
   }
 }
