@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual } from 'node:crypto';
 import { after, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
