@@ -3,6 +3,7 @@ import {
   INTERACTIVE_LIMITS,
   sendInteractiveButtons,
   sendInteractiveList,
+  sendTextMessage,
 } from "./meta-api";
 
 // All assertions in this file run BEFORE the network call. We stub fetch
@@ -20,6 +21,58 @@ const BASE_ARGS = {
   to: "1234567890",
   bodyText: "Body text",
 } as const;
+
+describe("sendTextMessage — recipient payload", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("normalizes a formatted international phone number to digits-only Meta `to`", async () => {
+    let captured: { body: unknown } | null = null;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: RequestInit) => {
+        captured = { body: JSON.parse(String(init.body)) };
+        return new Response(
+          JSON.stringify({ messages: [{ id: "wamid.TEXT" }] }),
+          { status: 200 },
+        );
+      }),
+    );
+
+    await sendTextMessage({
+      phoneNumberId: "test-phone",
+      accessToken: "test-token",
+      to: "+1 (555) 123-4567",
+      text: "hi",
+    });
+
+    expect(captured).not.toBeNull();
+    expect(captured!.body).toMatchObject({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: "15551234567",
+      type: "text",
+      text: { body: "hi" },
+    });
+    expect(captured!.body).not.toHaveProperty("recipient");
+  });
+
+  it("rejects a malformed phone recipient before making a Meta request", async () => {
+    const fetchMock = vi.fn(neverFetch);
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      sendTextMessage({
+        phoneNumberId: "test-phone",
+        accessToken: "test-token",
+        to: "not-a-phone",
+        text: "hi",
+      }),
+    ).rejects.toThrow(/Invalid WhatsApp recipient/);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
 
 describe("sendInteractiveButtons — validation", () => {
   beforeEach(() => {
