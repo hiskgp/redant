@@ -463,26 +463,20 @@ describe('sendMessageToConversation — Meta send diagnostics', () => {
       }),
     );
 
-    await expect(
-      sendMessageToConversation(sendPathDb([], captured), 'acct-1', {
+    try {
+      await sendMessageToConversation(sendPathDb([], captured), 'acct-1', {
         conversationId: 'cv-1',
         messageType: 'text',
         contentText: 'hi',
-      }),
-    ).rejects.toMatchObject({
-      message: expect.stringContaining(
+      });
+      throw new Error('Expected Meta send to fail');
+    } catch (error) {
+      expect(error).toBeInstanceOf(SendMessageError);
+      expect((error as Error).message).toContain(
         'Details: Param to must be a valid WhatsApp ID',
-      ),
-    });
-
-    await expect(
-      sendMessageToConversation(sendPathDb([], captured), 'acct-1', {
-        conversationId: 'cv-1',
-        messageType: 'text',
-        contentText: 'hi',
-      }),
-    ).rejects.toMatchObject({
-      message: expect.stringContaining('Meta trace ID: trace-test'),
-    });
+      );
+      expect((error as Error).message).toContain('subcode: 123');
+      expect((error as Error).message).toContain('Meta trace ID: trace-test');
+    }
   });
 });
