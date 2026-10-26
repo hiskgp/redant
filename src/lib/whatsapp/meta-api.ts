@@ -335,9 +335,23 @@ export async function getSubscribedApps(
  * and a BSUID always carries a two-letter prefix and a dot.
  */
 function recipientFields(to: string): Record<string, unknown> {
-  return isBusinessScopedUserId(to)
-    ? { recipient: to.trim() }
-    : { recipient_type: 'individual', to }
+  const recipient = to.trim()
+
+  // WhatsApp Cloud API expects a phone-number recipient in international
+  // digits-only form (country code included; no leading "+"). Some callers
+  // may still supply a display-formatted number, so normalize it here at the
+  // single outbound boundary used by text, template, media and interactive
+  // messages. Do not apply phone normalization to opaque BSUIDs.
+  if (isBusinessScopedUserId(recipient)) {
+    return { recipient }
+  }
+
+  const normalizedPhone = recipient.replace(/[\\s()+.-]/g, '')
+  if (!/^\\d{6,20}$/.test(normalizedPhone)) {
+    throw new Error('Invalid WhatsApp recipient: expected an international phone number or business-scoped user ID.')
+  }
+
+  return { recipient_type: 'individual', to: normalizedPhone }
 }
 
 export interface SendTextMessageArgs {
