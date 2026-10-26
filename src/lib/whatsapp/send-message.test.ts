@@ -6,6 +6,7 @@ import {
   SendMessageError,
   type SendMessageParams,
 } from './send-message';
+import { MetaApiError } from '@/lib/whatsapp/meta-api';
 
 // A db that explodes if touched — these tests cover the param
 // validation that MUST short-circuit before any query runs.
@@ -163,12 +164,14 @@ describe('SendMessageError', () => {
 // ============================================================
 
 const sendTemplateMessage = vi.fn(async () => ({ messageId: 'wamid.1' }));
+const sendTextMessage = vi.fn(async () => ({ messageId: 'wamid.text' }));
 
 // Stub only the senders — the module also exports INTERACTIVE_LIMITS,
 // which `interactive.ts` needs for the payload validation covered above.
 vi.mock('@/lib/whatsapp/meta-api', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
-  sendTextMessage: vi.fn(async () => ({ messageId: 'wamid.text' })),
+  sendTextMessage: (...args: unknown[]) =>
+    (sendTextMessage as unknown as (...a: unknown[]) => unknown)(...args),
   sendTemplateMessage: (...args: unknown[]) =>
     (sendTemplateMessage as unknown as (...a: unknown[]) => unknown)(...args),
   sendMediaMessage: vi.fn(async () => ({ messageId: 'wamid.media' })),
@@ -443,5 +446,43 @@ describe('sendMessageToConversation — BSUID recipients (#519)', () => {
         { conversationId: 'cv-1', messageType: 'text', contentText: 'hi' }
       )
     ).rejects.toThrow(/no phone number or WhatsApp user ID/);
+  });
+});
+
+
+describe('sendMessageToConversation — Meta send diagnostics', () => {
+  it('preserves Meta details, subcode and trace ID in the dashboard error', async () => {
+    const captured: CapturedWrites = {};
+    sendTextMessage.mockRejectedValueOnce(
+      new MetaApiError('(#100) Invalid parameter', {
+        code: 100,
+        subcode: 123,
+        httpStatus: 400,
+        details: 'Param to must be a valid WhatsApp ID',
+        fbtraceId: 'trace-test',
+      }),
+    );
+
+    await expect(
+      sendMessageToConversation(sendPathDb([], captured), 'acct-1', {
+        conversationId: 'cv-1',
+        messageType: 'text',
+        contentText: 'hi',
+      }),
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(
+        'Details: Param to must be a valid WhatsApp ID',
+      ),
+    });
+
+    await expect(
+      sendMessageToConversation(sendPathDb([], captured), 'acct-1', {
+        conversationId: 'cv-1',
+        messageType: 'text',
+        contentText: 'hi',
+      }),
+    ).rejects.toMatchObject({
+      message: expect.stringContaining('Meta trace ID: trace-test'),
+    });
   });
 });
