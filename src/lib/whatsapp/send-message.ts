@@ -22,6 +22,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import {
+  MetaApiError,
   sendTextMessage,
   sendTemplateMessage,
   sendMediaMessage,
@@ -438,8 +439,29 @@ export async function sendMessageToConversation(
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Unknown Meta API error';
-    console.error('[send-message] Meta send failed for all variants:', message);
-    throw new SendMessageError('meta_error', `Meta API error: ${message}`, 502);
+
+    // Preserve Meta's structured diagnostics. Never log the access token or
+    // the full recipient number; the trace ID lets us correlate with Meta.
+    if (err instanceof MetaApiError) {
+      console.error('[send-message] Meta send failed', {
+        messageType,
+        phoneNumberId: config.phone_number_id,
+        recipientSuffix: hasValidPhone ? sanitizedPhone.slice(-4) : 'bsuid',
+        httpStatus: err.httpStatus,
+        metaCode: err.code,
+        metaSubcode: err.subcode,
+        metaType: err.type,
+        details: err.details,
+        fbtraceId: err.fbtraceId,
+      });
+    } else {
+      console.error('[send-message] Meta send failed for all variants:', message);
+    }
+
+    const detail = err instanceof MetaApiError && err.details
+      ? ` — ${err.details}`
+      : '';
+    throw new SendMessageError('meta_error', `Meta API error: ${message}${detail}`, 502);
   }
 
   if (hasValidPhone && workingPhone !== sanitizedPhone) {
