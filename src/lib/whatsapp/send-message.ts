@@ -27,6 +27,7 @@ import {
   sendMediaMessage,
   sendInteractiveButtons,
   sendInteractiveList,
+  MetaApiError,
   type MediaKind,
 } from '@/lib/whatsapp/meta-api';
 import {
@@ -438,8 +439,33 @@ export async function sendMessageToConversation(
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Unknown Meta API error';
-    console.error('[send-message] Meta send failed for all variants:', message);
-    throw new SendMessageError('meta_error', `Meta API error: ${message}`, 502);
+    // Preserve Meta's structured diagnostics. Previously the dashboard
+    // only received error.message, dropping error_data.details, subcode
+    // and fbtrace_id — leaving (#100) Invalid parameter impossible to
+    // diagnose from the UI.
+    const diagnosticParts = [message];
+    if (err instanceof MetaApiError) {
+      if (err.details && !message.includes(err.details)) {
+        diagnosticParts.push(`Details: ${err.details}`);
+      }
+      if (err.subcode !== null) diagnosticParts.push(`subcode: ${err.subcode}`);
+      if (err.fbtraceId) diagnosticParts.push(`Meta trace ID: ${err.fbtraceId}`);
+      console.error('[send-message] Meta send failed for all variants:', {
+        message,
+        code: err.code,
+        subcode: err.subcode,
+        details: err.details,
+        fbtraceId: err.fbtraceId,
+        httpStatus: err.httpStatus,
+      });
+    } else {
+      console.error('[send-message] Meta send failed for all variants:', message);
+    }
+    throw new SendMessageError(
+      'meta_error',
+      `Meta API error: ${diagnosticParts.join(' | ')}`,
+      502
+    );
   }
 
   if (hasValidPhone && workingPhone !== sanitizedPhone) {
