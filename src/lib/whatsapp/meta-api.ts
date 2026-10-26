@@ -346,8 +346,8 @@ function recipientFields(to: string): Record<string, unknown> {
     return { recipient }
   }
 
-  const normalizedPhone = recipient.replace(/[\\s()+.-]/g, '')
-  if (!/^\\d{6,20}$/.test(normalizedPhone)) {
+  const normalizedPhone = recipient.replace(/[\s()+.-]/g, '')
+  if (!/^\d{6,20}$/.test(normalizedPhone)) {
     throw new Error('Invalid WhatsApp recipient: expected an international phone number or business-scoped user ID.')
   }
 
